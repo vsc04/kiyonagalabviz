@@ -1,0 +1,31 @@
+Package: kiyonagalabviz
+Type: Package
+Title: Kiyonaga Lab Styled Publication-Ready Plots in R
+Version: 0.1.0
+Authors@R:
+    person("Vivien", "Chopurian", email = "vchopurian@ucsd.edu",
+           role = c("aut", "cre"))
+Description: A ggplot2 theme, colour palettes and plotting helpers that follow
+    the visual style of the Kiyonaga Lab: colour schemes, font sizes, bar plots with optional
+    individual data points, and figure export for manuscripts and slides.
+License: MIT + file LICENSE
+URL: https://github.com/vsc04/kiyonagalabviz
+BugReports: https://github.com/vsc04/kiyonagalabviz/issues
+Encoding: UTF-8
+Depends:
+    R (>= 4.1.0)
+Imports:
+    ggplot2 (>= 4.0.0),
+    grDevices,
+    graphics,
+    grid,
+    stats,
+    systemfonts,
+    tools,
+    utils
+Suggests:
+    svglite,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
