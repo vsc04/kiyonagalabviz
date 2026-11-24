@@ -24,24 +24,39 @@ Requires `ggplot2 >= 4.0.0`.
 library(kiyonagalabviz)
 library(ggplot2)
 
-d <- simulate_lab_data()   # subject x load , outcome = pupil size and 
+sim <- simulate_lab_data()
+# sim$timecourse: subject x load (easy, hard) x time (0-5 s, 20 Hz), outcome = pupil size (mm, baseline-corrected)
+# sim$behavior:   subject x load, outcome = accuracy (proportion correct)
+
+# Timecourse: mean +/- SE ribbons (alpha 0.4), analysis window 3-5 s shaded
+plot_timecourse(sim$timecourse, time = "time", y = "pupil",
+                group = "load", window = c(3, 5)) +
+  labs(x = "Time (s)", y = "Pupil size (mm)", colour = "Load", fill = "Load")
+
+# Average the pupil over 3-5 s: one value per subject and load
+d <- merge(average_window(sim$timecourse, window = c(3, 5)), sim$behavior)
+# d: subject x load, pupil = mean pupil size 3-5 s, accuracy
 
 # Bars = condition means, grey error bars (SE), individual data points on top
-plot_bars(d, x = "load", y = "beta", group = "difficulty") +
-  labs(x = "WM load", y = "Left Parietal β", fill = "Visual search difficulty")
+p_bars <- plot_bars(d, x = "load", y = "pupil", group = "load") +
+  labs(x = "WM load", y = "Pupil size 3-5 s (mm)") +
+  theme(legend.position = "none")
+p_bars
 
-# Without points, 95% CI, sunset colours, larger font for slides
-plot_bars(d, "load", "beta", group = "difficulty",
-          show_points = FALSE, error = "ci", palette = "sunset", font_size = 12)
-
-# Use the theme and scales in any ggplot
-ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
-  geom_point() +
-  scale_colour_kiyonaga("papers") +
+# Scatter: pupil vs accuracy
+ggplot(d, aes(pupil, accuracy, colour = load)) +
+  geom_point(size = 1) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 0.5) +
+  scale_colour_kiyonaga("accent") +
+  labs(x = "Pupil size 3-5 s (mm)", y = "Accuracy", colour = "Load") +
   theme_kiyonaga()
 
-# Save at journal column width (keeps the panel aspect ratio)
-nice_save("figure_2.pdf", layout = "half col")
+# Save (keeps the panel aspect ratio)
+nice_save("pupil_bars.pdf", plot = p_bars, layout = "half col")    # paper: 8 pt text
+nice_save("pupil_bars.png", plot = p_bars, layout = "slides")      # slides: 14 pt text
+nice_save("pupil_bars_talk.png", plot = p_bars, layout = "slides",
+          font_size = 18)                                          # any text size
+nice_save("pupil_bars_tiny.pdf", plot = p_bars, layout = "tiny")   # inset: 6 pt text
 ```
 
 ## What's inside
