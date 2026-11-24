@@ -7,8 +7,10 @@
 #' @details
 #' Default sizes follow the lab's published figures: titles and axis titles at
 #' `font_size` (8 pt), tick and legend labels at 85% of it (~7 pt).
-#' Use 10-12 pt for slides. Fonts other than "sans", "serif" or "mono" must be
-#' installed on your system.
+#' All text sizes are relative to `font_size`, so
+#' `theme(text = element_text(size = 14))` resizes all text at once;
+#' [nice_save()] uses this for the `"slides"` and `"tiny"` layouts.
+#' Fonts other than "sans", "serif" or "mono" must be installed on your system.
 #'
 #' @param font_size Base font size in pt (titles, axis titles, legend title).
 #' @param font Font family. Defaults to `"sans"` (Arial/Helvetica).
@@ -56,12 +58,16 @@ check_font <- function(font) {
   "sans"
 }
 
+#' Size of tick labels, legend labels and captions relative to `font_size`
+#' @noRd
+small_text_ratio <- 0.85
+
 #' Font sizes and margins derived from the base font size
 #' @noRd
 theme_sizes <- function(font_size, tiny_margins) {
   list(
     base = font_size,
-    small = round(font_size * 0.85, 1),
+    small = round(font_size * small_text_ratio, 1),
     margin = if (tiny_margins) 2 else 4,
     margin_title = if (tiny_margins) 4 else 8
   )
@@ -73,17 +79,17 @@ theme_text_elements <- function(s) {
   ggplot2::theme(
     text = ggplot2::element_text(colour = kiyonaga_colors$TEXT),
     plot.title = ggplot2::element_text(
-      face = "bold", size = s$base, hjust = 0.5,
+      face = "bold", size = ggplot2::rel(1), hjust = 0.5,
       margin = ggplot2::margin(b = s$margin_title)
     ),
     plot.subtitle = ggplot2::element_text(
-      size = s$base, hjust = 0.5, colour = kiyonaga_colors$GREY_TEXT,
+      size = ggplot2::rel(1), hjust = 0.5, colour = kiyonaga_colors$GREY_TEXT,
       margin = ggplot2::margin(b = s$margin_title)
     ),
     plot.caption = ggplot2::element_text(
-      size = s$small, colour = kiyonaga_colors$GREY_TEXT
+      size = ggplot2::rel(small_text_ratio), colour = kiyonaga_colors$GREY_TEXT
     ),
-    strip.text = ggplot2::element_text(face = "bold", size = s$base),
+    strip.text = ggplot2::element_text(face = "bold", size = ggplot2::rel(1)),
     strip.background = ggplot2::element_blank()
   )
 }
@@ -99,11 +105,11 @@ theme_axis_elements <- function(s, thickness, ticks) {
     axis.line = axis_line,
     axis.ticks = if (ticks) axis_line else ggplot2::element_blank(),
     axis.ticks.length = ggplot2::unit(if (ticks) 2 else 0, "pt"),
-    axis.title = ggplot2::element_text(size = s$base),
+    axis.title = ggplot2::element_text(size = ggplot2::rel(1)),
     axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = s$margin)),
     axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = s$margin)),
     axis.text = ggplot2::element_text(
-      size = s$small, colour = kiyonaga_colors$GREY_TEXT
+      size = ggplot2::rel(small_text_ratio), colour = kiyonaga_colors$GREY_TEXT
     ),
     axis.text.x = ggplot2::element_text(margin = ggplot2::margin(t = 3)),
     axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 3))
@@ -115,11 +121,11 @@ theme_axis_elements <- function(s, thickness, ticks) {
 theme_legend_elements <- function(s, legend_position) {
   ggplot2::theme(
     legend.position = legend_position,
-    legend.title = ggplot2::element_text(face = "bold", size = s$base,
+    legend.title = ggplot2::element_text(face = "bold", size = ggplot2::rel(1),
                                          hjust = 0.5),
     legend.title.position = "top",
     legend.text = ggplot2::element_text(
-      size = s$small, colour = kiyonaga_colors$GREY_TEXT
+      size = ggplot2::rel(small_text_ratio), colour = kiyonaga_colors$GREY_TEXT
     ),
     legend.key.size = ggplot2::unit(s$small, "pt"),
     legend.key.spacing.x = ggplot2::unit(s$margin, "pt"),

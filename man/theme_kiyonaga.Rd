@@ -48,8 +48,10 @@ title centred above the keys.
 \details{
 Default sizes follow the lab's published figures: titles and axis titles at
 \code{font_size} (8 pt), tick and legend labels at 85\% of it (~7 pt).
-Use 10-12 pt for slides. Fonts other than "sans", "serif" or "mono" must be
-installed on your system.
+All text sizes are relative to \code{font_size}, so
+\code{theme(text = element_text(size = 14))} resizes all text at once;
+\code{\link[=nice_save]{nice_save()}} uses this for the \code{"slides"} and \code{"tiny"} layouts.
+Fonts other than "sans", "serif" or "mono" must be installed on your system.
 }
 \examples{
 library(ggplot2)

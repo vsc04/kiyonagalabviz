@@ -8,6 +8,7 @@ nice_save(
   filename,
   plot = ggplot2::last_plot(),
   layout = c("full col", "half col", "tiny", "full page", "slides"),
+  font_size = NULL,
   custom = NULL,
   dpi = 600,
   ...
@@ -20,6 +21,10 @@ nice_save(
 
 \item{layout}{One of \code{"full col"}, \code{"half col"}, \code{"tiny"}, \code{"full page"},
 \code{"slides"}.}
+
+\item{font_size}{Base font size in pt for the saved figure. \code{NULL}
+(default) uses 14 for \code{"slides"}, 6 for \code{"tiny"}, and leaves the plot's
+sizes unchanged otherwise.}
 
 \item{custom}{Optional numeric \code{c(width, height)} in inches; overrides
 \code{layout}.}
@@ -43,8 +48,13 @@ Layouts (width in inches; height follows from the panel aspect ratio):
 \item \code{"slides"}: 4.4 in high, width follows from the aspect ratio.
 }
 
-Recommended \code{font_size} in \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}: 8 pt for papers,
-6 pt for \code{"tiny"}, 10-12 pt for slides. Backgrounds are transparent; pass
+Text size: \code{"slides"} sets all text to 14 pt and \code{"tiny"} to 6 pt (tick
+and legend labels at 85\% of that); other layouts keep the plot's own sizes
+(8 pt with \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}). Pass \code{font_size} to choose any size. This
+rescales text defined relative to the base size, as in \code{\link[=theme_kiyonaga]{theme_kiyonaga()}};
+point sizes, line widths and \code{geom_text()} labels are not changed.
+
+Backgrounds are transparent; pass
 \code{bg = "white"} to override. \code{.pdf} is the preferred vector format; \code{.svg}
 requires the svglite package.
 }
@@ -53,5 +63,7 @@ requires the svglite package.
 sim <- simulate_lab_data()
 p <- plot_bars(average_window(sim$timecourse), "load", "pupil")
 nice_save("pupil_bars.pdf", p, layout = "half col")
+nice_save("pupil_bars_slide.png", p, layout = "slides")   # 14 pt text
+nice_save("pupil_bars_talk.png", p, layout = "slides", font_size = 18)
 }
 }

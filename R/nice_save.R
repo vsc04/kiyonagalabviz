@@ -9,8 +9,13 @@
 #' - `"full col"` (3.6), `"half col"` (1.8), `"tiny"` (1), `"full page"` (7.2)
 #' - `"slides"`: 4.4 in high, width follows from the aspect ratio.
 #'
-#' Recommended `font_size` in [theme_kiyonaga()]: 8 pt for papers,
-#' 6 pt for `"tiny"`, 10-12 pt for slides. Backgrounds are transparent; pass
+#' Text size: `"slides"` sets all text to 14 pt and `"tiny"` to 6 pt (tick
+#' and legend labels at 85% of that); other layouts keep the plot's own sizes
+#' (8 pt with [theme_kiyonaga()]). Pass `font_size` to choose any size. This
+#' rescales text defined relative to the base size, as in [theme_kiyonaga()];
+#' point sizes, line widths and `geom_text()` labels are not changed.
+#'
+#' Backgrounds are transparent; pass
 #' `bg = "white"` to override. `.pdf` is the preferred vector format; `.svg`
 #' requires the svglite package.
 #'
@@ -18,6 +23,9 @@
 #' @param plot A ggplot object. Defaults to the last plot.
 #' @param layout One of `"full col"`, `"half col"`, `"tiny"`, `"full page"`,
 #'   `"slides"`.
+#' @param font_size Base font size in pt for the saved figure. `NULL`
+#'   (default) uses 14 for `"slides"`, 6 for `"tiny"`, and leaves the plot's
+#'   sizes unchanged otherwise.
 #' @param custom Optional numeric `c(width, height)` in inches; overrides
 #'   `layout`.
 #' @param dpi Resolution for raster formats.
@@ -31,12 +39,16 @@
 #' sim <- simulate_lab_data()
 #' p <- plot_bars(average_window(sim$timecourse), "load", "pupil")
 #' nice_save("pupil_bars.pdf", p, layout = "half col")
+#' nice_save("pupil_bars_slide.png", p, layout = "slides")   # 14 pt text
+#' nice_save("pupil_bars_talk.png", p, layout = "slides", font_size = 18)
 #' }
 nice_save <- function(filename, plot = ggplot2::last_plot(),
                       layout = c("full col", "half col", "tiny",
                                  "full page", "slides"),
-                      custom = NULL, dpi = 600, ...) {
+                      font_size = NULL, custom = NULL, dpi = 600, ...) {
   layout <- match.arg(layout)
+  if (is.null(font_size)) font_size <- layout_font_size(layout)
+  if (!is.null(font_size)) plot <- resize_text(plot, font_size)
   dims <- figure_dims(plot, layout, custom)
   message("Saving a ", round(dims$width, 2), " x ", round(dims$height, 2),
           " in figure.")
@@ -48,6 +60,25 @@ nice_save <- function(filename, plot = ggplot2::last_plot(),
       device_args(filename), list(...))
   )
   invisible(filename)
+}
+
+#' Default base font size per layout (NULL = keep the plot's sizes)
+#' @noRd
+layout_font_size <- function(layout) {
+  sizes <- c("slides" = 14, "tiny" = 6)
+  if (layout %in% names(sizes)) sizes[[layout]] else NULL
+}
+
+#' Set the base text size; relative sizes in the theme follow
+#' @noRd
+resize_text <- function(plot, font_size) {
+  if (!is.numeric(font_size) || length(font_size) != 1 || font_size <= 0) {
+    stop("`font_size` must be a single positive number.", call. = FALSE)
+  }
+  plot + ggplot2::theme(
+    text = ggplot2::element_text(size = font_size),
+    legend.key.size = ggplot2::unit(font_size * small_text_ratio, "pt")
+  )
 }
 
 #' Width and height in inches for a layout
