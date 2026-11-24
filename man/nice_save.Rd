@@ -50,7 +50,8 @@ requires the svglite package.
 }
 \examples{
 \dontrun{
-p <- plot_bars(simulate_lab_data(), "load", "beta", group = "difficulty")
-nice_save("figure_2.pdf", p, layout = "half col")
+sim <- simulate_lab_data()
+p <- plot_bars(average_window(sim$timecourse), "load", "pupil")
+nice_save("pupil_bars.pdf", p, layout = "half col")
 }
 }

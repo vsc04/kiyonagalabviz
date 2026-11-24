@@ -28,18 +28,18 @@
 #' @export
 #'
 #' @examples
-#' d <- simulate_lab_data()
-#' plot_bars(d, x = "load", y = "beta", group = "difficulty")
-#' plot_bars(d, x = "load", y = "beta", group = "difficulty",
-#'           show_points = FALSE, palette = "sunset")
+#' sim <- simulate_lab_data()
+#' d <- average_window(sim$timecourse, window = c(3, 5))
+#' plot_bars(d, x = "load", y = "pupil")
+#' plot_bars(d, x = "load", y = "pupil", group = "load", error = "ci")
 plot_bars <- function(data, x, y, group = NULL,
                       error = c("se", "sd", "ci", "none"),
                       show_points = TRUE, palette = "greys",
                       point_style = list(), bar_width = 0.7,
                       dodge_width = 0.8, jitter_width = 0.4, seed = 1, ...) {
   error <- match.arg(error)
-  check_bar_data(data, x, y, group)
-  data <- prepare_bar_data(data, x, group)
+  check_columns(data, c(x, y, group), numeric = y)
+  data <- as_factors(data, c(x, group))
 
   p <- ggplot2::ggplot(data, bar_mapping(x, y, group)) +
     bar_layer(group, bar_width, dodge_width)
@@ -53,32 +53,6 @@ plot_bars <- function(data, x, y, group = NULL,
   p + bar_scales(group, palette) +
     theme_kiyonaga(...) +
     ggplot2::theme(axis.title.x = ggplot2::element_text(face = "bold"))
-}
-
-#' Validate inputs of plot_bars()
-#' @noRd
-check_bar_data <- function(data, x, y, group) {
-  if (!is.data.frame(data)) {
-    stop("`data` must be a data frame.", call. = FALSE)
-  }
-  missing <- setdiff(c(x, y, group), names(data))
-  if (length(missing) > 0) {
-    stop("Column(s) not found in `data`: ", paste(missing, collapse = ", "),
-         call. = FALSE)
-  }
-  if (!is.numeric(data[[y]])) {
-    stop("`y` must name a numeric column.", call. = FALSE)
-  }
-  invisible(TRUE)
-}
-
-#' Convert x and group columns to factors (keeping existing level order)
-#' @noRd
-prepare_bar_data <- function(data, x, group) {
-  for (col in c(x, group)) {
-    if (!is.factor(data[[col]])) data[[col]] <- factor(data[[col]])
-  }
-  data
 }
 
 #' Aesthetic mapping with or without a grouping variable

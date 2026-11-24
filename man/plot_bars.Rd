@@ -62,8 +62,8 @@ the PI's mid grey, and, optionally, every individual observation as a
 jittered point on top of its bar. Styled with \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}.
 }
 \examples{
-d <- simulate_lab_data()
-plot_bars(d, x = "load", y = "beta", group = "difficulty")
-plot_bars(d, x = "load", y = "beta", group = "difficulty",
-          show_points = FALSE, palette = "sunset")
+sim <- simulate_lab_data()
+d <- average_window(sim$timecourse, window = c(3, 5))
+plot_bars(d, x = "load", y = "pupil")
+plot_bars(d, x = "load", y = "pupil", group = "load", error = "ci")
 }

@@ -2,24 +2,38 @@
 % Please edit documentation in R/simulate_lab_data.R
 \name{simulate_lab_data}
 \alias{simulate_lab_data}
-\title{Simulate example data for trying out the package}
+\title{Simulate example pupil and behaviour data}
 \usage{
-simulate_lab_data(n_subjects = 24, seed = 1)
+simulate_lab_data(n_subjects = 24, duration = 5, sampling_rate = 20, seed = 1)
 }
 \arguments{
 \item{n_subjects}{Number of subjects.}
+
+\item{duration}{Length of the delay period in seconds.}
+
+\item{sampling_rate}{Pupil samples per second (Hz).}
 
 \item{seed}{Random seed. The global random number state is restored
 afterwards.}
 }
 \value{
-A data frame with columns \code{subject}, \code{load}, \code{difficulty}, \code{beta}.
+A list with two data frames:
+\itemize{
+\item \code{timecourse}: \code{subject}, \code{load}, \code{time} (s), \code{pupil} (baseline-corrected
+pupil size, mm); one row per subject, load and time point.
+\item \code{behavior}: \code{subject}, \code{load}, \code{accuracy} (proportion correct); one row
+per subject and load.
+}
 }
 \description{
-Simulates a within-subject design like the lab's working memory / visual
-search studies: each subject has one parietal beta per WM load
-(\code{"1 item"}, \code{"2 items"}) and search difficulty (\code{"easy"}, \code{"hard"}).
+Simulates a within-subject working memory experiment with two load
+conditions (\code{"easy"}, \code{"hard"}). Pupil size is recorded across a delay
+period: it rises after onset and levels off at a plateau that is about
+twice as high for hard load. Subjects differ in the size of their pupil
+response, and subjects with larger responses have slightly lower accuracy.
 }
 \examples{
-head(simulate_lab_data())
+sim <- simulate_lab_data()
+head(sim$timecourse)
+head(sim$behavior)
 }

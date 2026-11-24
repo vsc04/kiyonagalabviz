@@ -1,17 +1,13 @@
 # kiyonagalab
-
 A small R package with the Kiyonaga Lab figure style for `ggplot2`: a theme
-color palettes and font sizes,  and
-publication-ready export.
-
+color palettes and font sizes,  and publication-ready export.
 
 
 ## To-do
 Add 
-- eye tracking data (continues data with SEM error bars) wrapper
-- scatterplots wrapper 
-- switch for axes ticks inside or outside 
--  
+- switch for axes ticks inside or outside or OFF (AK style)
+- other plot format (e.g., heatmaps)
+-  format bar plots (narrower bars, bigger subject dots)
 
 ## Installation
 
@@ -52,7 +48,7 @@ nice_save("figure_2.pdf", layout = "half col")
 
 | Function | Purpose |
 |---|---|
-| `theme_kiyonaga()` | PI style: 8 pt titles, ~7 pt tick/legend labels, light grey axes, no ticks, legend on top with bold title |
+| `theme_kiyonaga()` | AK Style: 8 pt titles, ~7 pt tick/legend labels, light grey axes, no ticks, legend on top with bold title |
 | `plot_bars()` | Mean bars + error bars (`"se"`, `"sd"`, `"ci"`, `"none"`) + optional jittered individual points (`show_points`) |
 | `scale_fill_kiyonaga()`, `scale_colour_kiyonaga()` | Discrete or continuous scales from a lab palette |
 | `kiyonaga_colors`, `kiyonaga_palettes` | Named hex colours and palettes |
@@ -60,7 +56,9 @@ nice_save("figure_2.pdf", layout = "half col")
 | `preview_kiyonaga_palettes()` | Show all palettes |
 | `mean_sd()`, `mean_ci()` | Summary functions for `stat_summary(fun.data = ...)` |
 | `nice_save()` | Export at `"full col"`, `"half col"`, `"tiny"`, `"full page"`, `"slides"` sizes |
-| `simulate_lab_data()` | Example within-subject data set |
+| `simulate_lab_data()` | Example data: pupil timecourse (subject x load x time, 0-5 s) and accuracy (subject x load) |
+| `average_window()` | Average a timecourse within a time window (default 3-5 s), per subject and condition |
+| `plot_timecourse()` | Mean +/- SE ribbons (alpha 0.4) over time per condition, analysis window shaded |
 
 ## Palettes
 
@@ -78,6 +76,7 @@ With two groups, `greys` gives light (`#D9D9D9`) and dark (`#404040`) bars. Them
 
 
 ## Development
+
 Package structure adapted from [`charite`](https://github.com/johannesjuliusm/charite)
 by Johannes Julius Mohn (MIT licence).
 
