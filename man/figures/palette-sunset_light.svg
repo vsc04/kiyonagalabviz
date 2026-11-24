@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="48" viewBox="0 0 480 48">
+<rect x="0" y="0" width="96" height="48" fill="#BBC2B1"/>
+<text x="48.0" y="24.0" fill="#262626" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" dominant-baseline="central">#BBC2B1</text>
+<rect x="96" y="0" width="96" height="48" fill="#B8CBBA"/>
+<text x="144.0" y="24.0" fill="#262626" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" dominant-baseline="central">#B8CBBA</text>
+<rect x="192" y="0" width="96" height="48" fill="#D3D5C2"/>
+<text x="240.0" y="24.0" fill="#262626" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" dominant-baseline="central">#D3D5C2</text>
+<rect x="288" y="0" width="96" height="48" fill="#E6BDA1"/>
+<text x="336.0" y="24.0" fill="#262626" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" dominant-baseline="central">#E6BDA1</text>
+<rect x="384" y="0" width="96" height="48" fill="#EBAC99"/>
+<text x="432.0" y="24.0" fill="#262626" font-family="Helvetica, Arial, sans-serif" font-size="13" text-anchor="middle" dominant-baseline="central">#EBAC99</text>
+</svg>

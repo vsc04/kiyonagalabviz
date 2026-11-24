@@ -60,17 +60,31 @@ nice_save("figure_2.pdf", layout = "half col")
 | `average_window()` | Average a timecourse within a time window (default 3-5 s), per subject and condition |
 | `plot_timecourse()` | Mean +/- SE ribbons (alpha 0.4) over time per condition, analysis window shaded |
 
+
 ## Palettes
 
-| Palette | Colours |
-|---|---|
-| `sunset`  | `#EBD898` `#E8C397` `#E4AB94` `#E29492` `#A9BBEC` `#8994C1` |
-| `sunset_light` | `#BBC2B1` `#B8CBBA` `#D3D5C2` `#E6BDA1` `#EBAC99` |
-| `greys`   | `#D9D9D9` `#A6A6A6` `#404040` |
-| `accent` | `#74B49B` `#7F8EC4` `#E486E1` |
+**`sunset`** ("About the lab" logo)
 
-With two groups, `greys` gives light (`#D9D9D9`) and dark (`#404040`) bars. Theme greys: axis lines `#BFBFBF`, tick and legend labels
-`#595959`, error bars `#A6A6A6`, text `#262626`.
+![sunset palette](man/figures/palette-sunset.svg)
+
+**`sunset_light`** ("Papers" artwork)
+
+![sunset_light palette](man/figures/palette-sunset_light.svg)
+
+**`greys`** (Fgure greys; two groups give light and dark bars)
+
+![greys palette](man/figures/palette-greys.svg)
+
+**`accent`** 
+
+![accent palette](man/figures/palette-accent.svg)
+
+**Theme greys** (axis lines, tick and legend labels, text; not a palette)
+
+![theme greys](man/figures/palette-theme_greys.svg)
+
+Run `preview_kiyonaga_palettes()` in R to see all palettes, or
+`preview_kiyonaga_palettes("continuous")` for the gradients.
 
 
 
