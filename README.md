@@ -3,11 +3,14 @@ A small R package with the Kiyonaga Lab figure style for `ggplot2`: a theme
 color palettes and font sizes,  and publication-ready export.
 
 
-## To-do
-Add 
-- switch for axes ticks inside or outside or OFF (AK style)
-- other plot format (e.g., heatmaps)
--  format bar plots (narrower bars, bigger subject dots)
+## To-do 
+- add switch for axes ticks INSIDE or OUTSIDE or OFF (AK style)
+- add other plot format (e.g., heatmaps)
+- format bar plots (narrower bars, bigger subject dots)
+- linewidth needs to be consistent and visible
+- errorbars need to be consistent
+- 
+
 
 ## Installation
 
