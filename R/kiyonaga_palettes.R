@@ -9,8 +9,9 @@
 #' - `green_purple`: green, purple; `green_purple_2`: teal, purple;
 #'   `green_purple_3`: green, purple in a darker set of shades.
 #' - `skyblue_orange`: sky blue, orange; `blue_yellow`: blue, yellow;
-#'   `blue_yellow_2`: muted blue, gold.
-#' - Each of these eight main palettes has a `_light` variant. `accent_3`
+#'   `blue_yellow_2`: muted blue, gold;
+#' - `moss_stone`: green, brown, blue.
+#' - Each of these main palettes has a `_light` variant. `accent_3`
 #'   also has an intermediate `accent_3_med` variant.
 #' - `blue_yellow_continuous`: navy through grey and olive to yellow.
 #' - `blue_red_continuous`: blue through a pale neutral centre to red.
@@ -124,5 +125,15 @@ kiyonaga_palettes <- list(
     kiyonaga_colors$GAZE_SIMILARITY_PEACH,
     kiyonaga_colors$GAZE_SIMILARITY_RED,
     kiyonaga_colors$GAZE_SIMILARITY_BURGUNDY
+  ),
+  moss_stone = c(
+    kiyonaga_colors$MOSS_STONE_GREEN,
+    kiyonaga_colors$MOSS_STONE_BROWN,
+    kiyonaga_colors$MOSS_STONE_BLUE
+  ),
+  moss_stone_light = c(
+    kiyonaga_colors$MOSS_STONE_GREEN_LIGHT,
+    kiyonaga_colors$MOSS_STONE_BROWN_LIGHT,
+    kiyonaga_colors$MOSS_STONE_BLUE_LIGHT
   )
 )

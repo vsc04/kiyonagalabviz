@@ -101,16 +101,16 @@ plot_heatmap(map, "x", "y", "value", palette = "blue_red_continuous",
 ![Palettes](man/figures/color-palettes.svg)
 
 - **Discrete:** `sunset`, `sunset_light`, `greys`, `accent`.
-- **Two-factor** (for `group` + `subgroup`): `accent_2`, `accent_3`,
+- **With light shades** (for `group` + `subgroup`): `accent_2`, `accent_3`,
   `green_purple`, `green_purple_2`, `green_purple_3`, `skyblue_orange`,
-  `blue_yellow`, `blue_yellow_2`. Each has a `_light` variant; `accent_3`
-  also has `_med`.
+  `blue_yellow`, `blue_yellow_2`, `moss_stone`. Each has a `_light` variant;
+  `accent_3` also has `_med`.
 - **Continuous:** `blue_yellow_continuous` (sequential),
   `blue_red_continuous` (signed; use with `midpoint = 0`).
 
 `group` picks the colour and `subgroup` the shade: the first subgroup level is
-dark, the second light. This needs a two-factor palette and two subgroup
-levels (three for `accent_3`).
+dark, the second light. This needs a palette with light shades and two
+subgroup levels (three for `accent_3`).
 
 ```r
 d2 <- expand.grid(task = c("A", "B"), session = c("first", "second"),

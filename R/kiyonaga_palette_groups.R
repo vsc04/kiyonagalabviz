@@ -7,7 +7,7 @@
 #'
 #' Palettes are listed in display order: `accent_2`, `accent_3`,
 #' `green_purple`, `green_purple_2`, `green_purple_3`, `skyblue_orange`,
-#' `blue_yellow`, `blue_yellow_2`.
+#' `blue_yellow`, `blue_yellow_2`, `moss_stone`.
 #'
 #' @details
 #' Output is grouped by primary colour, then dark-to-light shade. Paired
@@ -45,7 +45,9 @@ kiyonaga_palette_groups <- list(
   blue_yellow = list(condition_groups = 2, levels = c("dark", "light"),
                       palettes = c("blue_yellow", "blue_yellow_light"), combine = "interleave"),
   blue_yellow_2 = list(condition_groups = 2, levels = c("dark", "light"),
-                        palettes = c("blue_yellow_2", "blue_yellow_2_light"), combine = "interleave")
+                        palettes = c("blue_yellow_2", "blue_yellow_2_light"), combine = "interleave"),
+  moss_stone = list(condition_groups = 2, levels = c("dark", "light"),
+                    palettes = c("moss_stone", "moss_stone_light"), combine = "interleave")
 )
 
 #' Resolve the recorded shade combinations for one main palette family

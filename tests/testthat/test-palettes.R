@@ -2,7 +2,8 @@ test_that("paper palettes contain valid colours and keep the original palettes",
   expect_false("scene_check" %in% names(kiyonaga_palettes))
   expect_identical(names(kiyonaga_palette_groups), c(
     "accent_2", "accent_3", "green_purple", "green_purple_2",
-    "green_purple_3", "skyblue_orange", "blue_yellow", "blue_yellow_2"
+    "green_purple_3", "skyblue_orange", "blue_yellow", "blue_yellow_2",
+    "moss_stone"
   ))
   expect_identical(kiyonaga_palettes$green_purple, c("#83B174", "#A96FAE"))
   expect_identical(kiyonaga_palettes$green_purple_light, c("#A8C89D", "#C29AC6"))
@@ -24,7 +25,7 @@ test_that("explicit alpha modifiers preserve the supplied RGB colours", {
   expect_identical(pal, c("#75C9EBFF", "#75C9EB66", "#FA703EFF", "#FA703E66"))
   expect_equal(grDevices::col2rgb(pal), grDevices::col2rgb(cols))
   expect_identical(make_kiyonaga_palette(cols, reverse = TRUE,
-                                        alpha = c(1, 0.4, 1, 0.4))(4), rev(pal))
+                                         alpha = c(1, 0.4, 1, 0.4))(4), rev(pal))
 })
 
 test_that("alpha is validated and multiplies existing opacity", {
@@ -64,7 +65,7 @@ test_that("timecourse ribbons can retain explicitly supplied palette opacity", {
   sim <- simulate_lab_data(n_subjects = 4)
   cols <- make_kiyonaga_palette("skyblue_orange", alpha = c(0.2, 0.4))(2)
   p <- plot_timecourse(sim$timecourse, "time", "pupil", group = "load",
-                        palette = cols, ribbon_alpha = NULL)
+                       palette = cols, ribbon_alpha = NULL)
   ribbon <- ggplot2::layer_data(p, 1)
   expect_setequal(unique(ribbon$fill), cols)
   expect_true(all(is.na(ribbon$alpha)))
@@ -76,16 +77,19 @@ test_that("secondary conditions use exactly the recorded opaque shade combinatio
   p <- kiyonaga_palettes
   expected <- list(
     accent_2 = c(p$accent_2[1], p$accent_2_light[1], p$accent_2[2], p$accent_2_light[2],
-                p$accent_2[3], p$accent_2_light[3]),
+                 p$accent_2[3], p$accent_2_light[3]),
     skyblue_orange = c(p$skyblue_orange[1], p$skyblue_orange_light[1],
                        p$skyblue_orange[2], p$skyblue_orange_light[2]),
     green_purple = c(p$green_purple[1], p$green_purple_light[1],
-                              p$green_purple[2], p$green_purple_light[2]),
+                     p$green_purple[2], p$green_purple_light[2]),
     blue_yellow = c(p$blue_yellow[1], p$blue_yellow_light[1], p$blue_yellow[2], p$blue_yellow_light[2]),
     green_purple_2 = c(p$green_purple_2[1], p$green_purple_2_light[1], p$green_purple_2[2], p$green_purple_2_light[2]),
     green_purple_3 = c(p$green_purple_3[1], p$green_purple_3_light[1], p$green_purple_3[2], p$green_purple_3_light[2]),
     blue_yellow_2 = c(p$blue_yellow_2[1], p$blue_yellow_2_light[1],
-                       p$blue_yellow_2[2], p$blue_yellow_2_light[2]),
+                      p$blue_yellow_2[2], p$blue_yellow_2_light[2]),
+    moss_stone = c(p$moss_stone[1], p$moss_stone_light[1],
+                   p$moss_stone[2], p$moss_stone_light[2],
+                   p$moss_stone[3], p$moss_stone_light[3]),
     accent_3 = c(p$accent_3[1], p$accent_3_med[1], p$accent_3_light[1],
                  p$accent_3[2], p$accent_3_med[2], p$accent_3_light[2],
                  p$accent_3[3], p$accent_3_med[3], p$accent_3_light[3])
@@ -135,13 +139,13 @@ test_that("scales and plot helpers use fully opaque graded condition colours", {
     expect_identical(unname(s$map(conditions)), expected)
   }
   d <- expand.grid(condition = factor(conditions, levels = conditions),
-                    time = 0:2, subject = 1:3)
+                   time = 0:2, subject = 1:3)
   d$value <- seq_len(nrow(d)) / 100
   bars <- plot_bars(d, "time", "value", group = "condition",
                     palette = "accent_3", condition_groups = 3)
   expect_setequal(ggplot2::layer_data(bars, 1)$fill, expected)
   p <- plot_timecourse(d, "time", "value", group = "condition",
-                        palette = "accent_3", condition_groups = 3)
+                       palette = "accent_3", condition_groups = 3)
   expect_setequal(ggplot2::layer_data(p, 1)$fill, expected)
   expect_setequal(ggplot2::layer_data(p, 2)$colour, expected)
   expect_true(all(grDevices::col2rgb(ggplot2::layer_data(p, 2)$colour, alpha = TRUE)[4, ] == 255))
@@ -157,6 +161,8 @@ test_that("renamed shade sets contain matching accents in dark-to-light order", 
   expect_identical(p$accent_3, c("#6A0136", "#60A27D", "#CB8589"))
   expect_identical(p$accent_3_med, c("#9E597C", "#97C2AA", "#DDAFB2"))
   expect_identical(p$accent_3_light, c("#C399AE", "#BFD9CB", "#EACECF"))
+  expect_identical(p$moss_stone, c("#BEAE03", "#4E3E46", "#9EA5B7"))
+  expect_identical(p$moss_stone_light, c("#DED681", "#A69EA2", "#CED2DB"))
   expect_false(any(c("blue_yellow_2_visual", "blue_yellow_2_verbal", "memorability_rt",
                      "memorability_accuracy", "memorability_errors") %in% names(p)))
   expect_identical(make_kiyonaga_palette("blue_yellow_2", condition_groups = 2)(4),

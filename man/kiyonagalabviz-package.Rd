@@ -19,10 +19,5 @@ Useful links:
 \author{
 \strong{Maintainer}: Vivien Chopurian \email{vchopurian@ucsd.edu}
 
-Authors:
-\itemize{
-  \item Vivien Chopurian \email{vchopurian@ucsd.edu}
-}
-
 }
 \keyword{internal}

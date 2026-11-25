@@ -42,7 +42,7 @@ vector of hex colours, including \verb{#RRGGBBAA} for transparency.}
 \item{reverse}{Logical; reverse the palette order?}
 
 \item{...}{Passed to \code{\link[ggplot2:discrete_scale]{ggplot2::discrete_scale()}} or
-\code{\link[ggplot2:scale_colour_gradientn]{ggplot2::scale_colour_gradientn()}}.}
+\code{\link[ggplot2:scale_gradient]{ggplot2::scale_colour_gradientn()}}.}
 
 \item{alpha}{Optional opacity multiplier, either one number between 0 and 1
 or one per full resolved palette colour. Applied before reversal; see
