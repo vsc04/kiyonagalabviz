@@ -2,15 +2,24 @@
 .Rhistory
 .RData
 .DS_Store
-
 # Ignore PDF outputs, but allow documentation figure assets.
 *.pdf
 !/man/figures/*.pdf
 /tools/output/
 docs/
 papers/
-
 # Local renv packages and caches; keep renv setup files and renv.lock tracked.
 /renv/library/
 /renv/staging/
 /renv/cache/
+# Local Google OAuth credentials and tokens (prefer storage outside this repo).
+.Renviron
+.httr-oauth*
+.secrets/
+.credentials/
+.gargle-oauth/
+client_secret*.json
+google-client*.json
+google_client*.json
+google-oauth*
+/Users/zhuojunying/Library/Caches/org.R-project.R/R/kiyonagalabviz/google-oauth

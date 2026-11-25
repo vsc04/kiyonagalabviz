@@ -7,3 +7,8 @@
 ^_pkgdown\.yml$
 ^tools$
 ^papers$
+^\.Renviron$
+^\.httr-oauth.*$
+^\.(secrets|credentials|gargle-oauth)$
+^(client_secret|google-client|google_client|google-oauth).*$
+^/Users/zhuojunying/Library/Caches/org\.R-project\.R/R/kiyonagalabviz/google-oauth$

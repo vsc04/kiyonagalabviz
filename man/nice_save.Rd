@@ -13,7 +13,9 @@ nice_save(
   dpi = 600,
   ...,
   preset = NULL,
-  n_bars = NULL
+  n_bars = NULL,
+  slides = NULL,
+  panel = NULL
 )
 }
 \arguments{
@@ -43,6 +45,12 @@ A ratio preset changes panel shape without changing text or figure width.}
 
 \item{n_bars}{Optional manual bar count for a bar ratio preset. By default,
 infer it from built bar layers, taking the largest count across panels.}
+
+\item{slides}{Optional \code{\link[=slides_target]{slides_target()}} configuration. After successfully
+saving a PNG, refresh the named panel in that presentation. A remote error
+leaves the local file saved. Omit to save locally only.}
+
+\item{panel}{Image Alt text Title in Google Slides; required with \code{slides}.}
 }
 \value{
 The file name, invisibly.

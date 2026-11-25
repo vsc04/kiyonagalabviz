@@ -158,6 +158,68 @@ ggplot(mtcars, aes(wt, mpg, colour = factor(cyl))) +
 - Point sizes and line widths are not rescaled between layouts.
 - `.pdf` is the preferred format; `.svg` needs svglite.
 
+## Refresh panels in Google Slides
+
+**Collaborators do not need to create a Cloud project, OAuth client or Apps
+Script bridge.** The maintainer configures the shared lab app once. Ask them for
+the Desktop client JSON and deployment ID, and to enable your Google account
+for the app. You need edit access to the presentation.
+
+Install the package using the Installation instructions above, then run in R:
+
+```r
+install.packages(c("httr", "jsonlite", "png"))
+library(kiyonagalabviz)
+```
+
+Save the supplied JSON outside the repository as
+`~/.config/kiyonagalabviz/google_client.json`. Sign in with **your own Google
+account**; each user's token stays in their own local cache. Never share tokens.
+
+For a one-panel test, connect to your presentation and save an example locally:
+
+```r
+slides_auth(client = "~/.config/kiyonagalabviz/google_client.json")
+target <- slides_target("YOUR_PRESENTATION_ID", "SHARED_DEPLOYMENT_ID")
+
+set.seed(1)
+example_data <- data.frame(time = seq(0, 10, length.out = 40))
+example_data$value <- 2 + 0.5 * example_data$time + rnorm(40, sd = 0.7)
+p <- plot_scatter(example_data, "time", "value", fit = TRUE) +
+  ggplot2::labs(title = "Original panel", x = "Time", y = "Value")
+panel_file <- "panel_A.png"
+nice_save(panel_file, p, custom = c(4, 3), dpi = 150)
+normalizePath(panel_file)
+```
+
+In Slides, use **Insert → Image → Upload from computer** to insert that PNG.
+Set its **Alt text → Title** to `panel_A` (look under **Advanced options** if
+hidden). Move, resize or crop it; leave it ungrouped. Then run in R:
+
+```r
+slides_panels(target)  # should list panel_A
+p_updated <- p + ggplot2::labs(title = "Updated again after cropping")
+nice_save(panel_file, p_updated, custom = c(4, 3), dpi = 150,
+          slides = target, panel = "panel_A")
+```
+
+The title should update in Slides while retaining the panel's position, size
+and crop. Future saves with `slides` and `panel` refresh it automatically.
+To refresh several regenerated files together:
+
+```r
+slides_sync(target, c(panel_A = "panel_A.png", panel_B = "panel_B.png"))
+```
+
+The current bridge template defaults to **Only myself**; the maintainer must
+enable collaborator access before sharing it. The maintainer must also enable
+**both Google Apps Script API and Google Slides API separately** in the same
+Cloud project; enabling one does not enable the other. See the
+[collaborator instructions](inst/google-slides/README.md#for-collaborators) and
+[one-time maintainer setup](inst/google-slides/README.md#one-time-maintainer-setup).
+Collaborators can skip the maintainer setup entirely. Slides uses raster
+previews; retain SVG/PDF exports for vector publication output.
+
 ## Legends
 
 `legend = "separate"` hides the legend so it can be saved on its own:

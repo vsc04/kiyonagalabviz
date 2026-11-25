@@ -6,7 +6,7 @@
 \alias{kiyonagalabviz-package}
 \title{kiyonagalabviz: Kiyonaga Lab Styled Publication-Ready Plots in R}
 \description{
-A ggplot2 theme, colour palettes and plotting helpers that follow the visual style of the Kiyonaga Lab: colour schemes, font sizes, summary plots, fitted relationships, distributions, subject trajectories, and figure export with optional separate legends for manuscripts and slides.
+A ggplot2 theme, colour palettes and plotting helpers that follow the visual style of the Kiyonaga Lab: colour schemes, font sizes, summary plots, fitted relationships, distributions, subject trajectories, and figure export with optional separate legends for manuscripts and slides, and authenticated refresh of plot panels in Google Slides.
 }
 \seealso{
 Useful links:

@@ -45,6 +45,10 @@
 #'   A ratio preset changes panel shape without changing text or figure width.
 #' @param n_bars Optional manual bar count for a bar ratio preset. By default,
 #'   infer it from built bar layers, taking the largest count across panels.
+#' @param slides Optional [slides_target()] configuration. After successfully
+#'   saving a PNG, refresh the named panel in that presentation. A remote error
+#'   leaves the local file saved. Omit to save locally only.
+#' @param panel Image Alt text Title in Google Slides; required with `slides`.
 #'
 #' @return The file name, invisibly.
 #' @export
@@ -62,7 +66,18 @@ nice_save <- function(filename, plot = ggplot2::last_plot(),
                       layout = c("full col", "half col", "tiny",
                                  "full page", "slides"),
                       font_size = NULL, custom = NULL, dpi = 600, ...,
-                      preset = NULL, n_bars = NULL) {
+                      preset = NULL, n_bars = NULL, slides = NULL, panel = NULL) {
+  if (!is.null(slides)) {
+    if (!inherits(slides, "kiyonaga_slides_target")) {
+      stop("`slides` must come from slides_target().", call. = FALSE)
+    }
+    slides_string(panel, "panel")
+    if (tolower(tools::file_ext(filename)) != "png") {
+      stop("Google Slides previews must be saved as .png; save vectors separately.", call. = FALSE)
+    }
+  } else if (!is.null(panel)) {
+    stop("Supply `slides` when setting `panel`.", call. = FALSE)
+  }
   if (inherits(plot, "grob")) {
     if (!is.null(font_size) || !is.null(preset)) {
       stop("Set legend fonts and presets on the source plot before extraction.", call. = FALSE)
@@ -78,6 +93,7 @@ nice_save <- function(filename, plot = ggplot2::last_plot(),
             c(list(filename = filename, plot = plot, width = dims[1],
                    height = dims[2], units = "in", dpi = dpi),
               device_args(filename), list(...)))
+    if (!is.null(slides)) slides_sync(slides, stats::setNames(filename, panel))
     return(invisible(filename))
   }
   settings <- get_plot_preset(preset)
@@ -111,6 +127,7 @@ nice_save <- function(filename, plot = ggplot2::last_plot(),
            height = dims$height, dpi = dpi, units = "in"),
       device_args(filename), list(...))
   )
+  if (!is.null(slides)) slides_sync(slides, stats::setNames(filename, panel))
   invisible(filename)
 }
 
