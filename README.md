@@ -40,24 +40,39 @@ ggplot(d, aes(pupil, accuracy, colour = load)) +
 `plot_timecourse()` draws means and uncertainty ribbons. Both accept `group` for primary colours, `subgroup` for secondary shades,
 a palette name and a plot ratio `preset`. The theme and scales also work with any ggplot.
 
+## What's inside
+
+| Function | Purpose |
+|---|---|
+| `theme_kiyonaga()` | Lab theme: 8 pt titles, 6.8 pt tick/legend labels, light grey axes, optional inside/outside ticks (off by default), and a top legend with a bold title |
+| `plot_bars()` | Mean bars with SE, SD, CI or no error bars, plus optional individual dots |
+| `plot_means()` | Mean points with error bars, optional individual dots and a horizontal mean marker |
+| `plot_predictions()` | Fitted lines and confidence bands with optional binned means and selectable error bars |
+| `plot_histogram()` | Histograms with an optional density curve |
+| `plot_density()` | Kernel density distributions |
+| `plot_boxplots()` | Medians, interquartile ranges, whiskers and optional individual dots |
+| `plot_paired()` | Connected subject means across ordered conditions |
+| `plot_lines()` | Mean lines with optional rolling averages and SE, SD or CI ribbons |
+| `plot_timecourse()` | Mean timecourses with SE, SD or CI ribbons (alpha 0.4 by default) and an optional shaded analysis window |
+| `plot_heatmap()` | Borderless numeric grids or categorical matrices with a continuous colour bar |
+| `scale_fill_kiyonaga()`, `scale_colour_kiyonaga()`, `scale_color_kiyonaga()` | Discrete or continuous colour scales from a lab palette |
+| `kiyonaga_colors`, `kiyonaga_palettes` | Named hex colours and palettes |
+| `kiyonaga_palette_groups` | Primary colours and secondary-condition shade combinations |
+| `make_kiyonaga_palette()` | Palette function returning a requested number of colours; retains original colours when they fit |
+| `preview_kiyonaga_palettes()` | Display the palettes in R |
+| `kiyonaga_plot_presets` | Panel aspect ratios and whole-figure export sizes and text defaults |
+| `kiyonaga_point_presets` | Individual-dot sizes, shapes, fills, outlines and opacity presets |
+| `mean_sd()`, `mean_ci()` | Summary functions for `stat_summary(fun.data = ...)` |
+| `nice_save()` | Export using `"full col"`, `"half col"`, `"tiny"`, `"full page"` or `"slides"` layouts |
+| `plot_legend()` | Extract a legend or colour bar for separate export with `nice_save()` |
+| `simulate_lab_data()` | Example pupil timecourses (subject x load x time, 0-5 s) and accuracy data (subject x load) |
+| `average_window()` | Average a timecourse within a time window (default 3-5 s), per subject and condition |
+
 ## Plot helpers
 
 All helpers use `theme_kiyonaga()` and support `palette`, `preset`, and
 `legend`. Column names are supplied as strings. `group` and `subgroup` select
 colours and shades in the other helpers; heatmaps use them for condition panels.
-
-| Helper | Displays |
-|---|---|
-| `plot_bars()` | Mean bars, uncertainty intervals and optional individual points |
-| `plot_means()` | Mean points and uncertainty intervals, without bars |
-| `plot_predictions()` | Fitted lines, confidence bands and binned means; grouped fits visualize interactions |
-| `plot_histogram()` | Histogram with an optional density curve |
-| `plot_density()` | Kernel density distributions |
-| `plot_boxplots()` | Median, interquartile range, whiskers and optional individual points |
-| `plot_paired()` | Connected subject means across ordered conditions |
-| `plot_lines()` | Mean lines with optional rolling averages and uncertainty ribbons |
-| `plot_timecourse()` | Timecourse means and ribbons with an optional shaded analysis window |
-| `plot_heatmap()` | Borderless numeric grids or categorical matrices with a continuous colour bar |
 
 ![Plot helper examples](man/figures/plot-types.svg)
 
@@ -112,7 +127,7 @@ subject and condition before connecting points in x-factor order.
 
 ### Axis ticks and subject points
 
-Ticks default to off (AK style). Use `ticks = "inside"` or `"outside"` in the
+Ticks default to off. Use `ticks = "inside"` or `"outside"` in the
 theme or any plot helper; `tick_length` sets their length in points. Existing
 `ticks = FALSE` / `TRUE` calls still mean off / outside.
 
@@ -129,12 +144,11 @@ bar width independently.
 | `point_preset` | Individual-dot appearance | Size | Alpha |
 |---|---|---|---|
 | `"default"` | White circles, dark grey outlines | 1 mm | 0.8 |
-| `"grey_filled"` | Solid grey circles; ocular paper Fig. 3D | 1 mm | 0.6 |
-| `"colour_outlined"` | Group-coloured circles, grey outlines; sensorimotor paper Fig. 1D | 1.5 mm | 0.8 |
-| `"grey_small"` | Small faint grey circles; pupil/task paper Fig. 1D-F | 0.5 mm | 0.4 |
+| `"grey_filled"` | Solid grey circles | 1 mm | 0.6 |
+| `"colour_outlined"` | Group-coloured circles, grey outlines | 1.5 mm | 0.8 |
+| `"grey_small"` | Small faint grey circles | 0.5 mm | 0.4 |
 
-These paper-based styles are visual approximations. Original point sizes and
-alpha values cannot be recovered exactly from the PDFs. Presets affect
+Presets affect
 individual dots only. `point_style` overrides any preset field.
 
 ![Individual-dot presets](man/figures/point-presets.svg)
