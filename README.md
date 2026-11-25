@@ -7,8 +7,8 @@ Kiyonaga Lab style.
 
 ```r
 # Requires R >= 4.1.0 and ggplot2 >= 4.0.0
-# install.packages("devtools")
-devtools::install_github("vsc04/kiyonagalabviz")
+install.packages("remotes")
+remotes::install_github("vsc04/kiyonagalabviz")
 install.packages("svglite")  # only needed to save .svg files
 ```
 
@@ -214,6 +214,7 @@ See each function's help page (e.g. `?plot_predictions`) for all arguments.
 ## Development
 
 ```r
+# install.packages("devtools")
 devtools::document()
 devtools::test()
 devtools::check()
