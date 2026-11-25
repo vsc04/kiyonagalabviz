@@ -215,9 +215,19 @@ See each function's help page (e.g. `?plot_predictions`) for all arguments.
 
 ```r
 # install.packages("devtools")
-devtools::document()
-devtools::test()
-devtools::check()
+```
+
+1. Open `kiyonagalabviz.Rproj`, so R starts in the right folder.
+2. Edit files in `R/`.
+3. Run `devtools::load_all()` to try your changes.
+4. Run `devtools::document()` after changing any `#'` comments.
+5. Run `devtools::test()`, then `devtools::check()` before you push.
+6. Commit and push:
+
+```bash
+git add -A
+git commit -m "Short description of the change"
+git push
 ```
 
 Package structure adapted from [`charite`](https://github.com/johannesjuliusm/charite)
