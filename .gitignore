@@ -2,4 +2,15 @@
 .Rhistory
 .RData
 .DS_Store
+
+# Ignore PDF outputs, but allow documentation figure assets.
+*.pdf
+!/man/figures/*.pdf
+/tools/output/
 docs/
+papers/
+
+# Local renv packages and caches; keep renv setup files and renv.lock tracked.
+/renv/library/
+/renv/staging/
+/renv/cache/

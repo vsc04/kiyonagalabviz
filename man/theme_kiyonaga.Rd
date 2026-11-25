@@ -13,7 +13,10 @@ theme_kiyonaga(
   ticks = FALSE,
   legend_position = "top",
   tiny_margins = FALSE,
-  debug_area = FALSE
+  debug_area = FALSE,
+  preset = NULL,
+  n_bars = 2,
+  tick_length = 2
 )
 }
 \arguments{
@@ -28,7 +31,9 @@ the available space.}
 
 \item{grid}{Logical; add light grey major grid lines?}
 
-\item{ticks}{Logical; draw axis ticks? The PI's style has none.}
+\item{ticks}{Tick direction: \code{"inside"}, \code{"outside"}, or \code{"off"} (AK style).
+Logical values are also supported: \code{FALSE} (default) means \code{"off"}, and
+\code{TRUE} means \code{"outside"}.}
 
 \item{legend_position}{Legend position, e.g. \code{"top"} (default), \code{"right"},
 \code{"none"}.}
@@ -36,6 +41,18 @@ the available space.}
 \item{tiny_margins}{Logical; minimise margins around the panel.}
 
 \item{debug_area}{Logical; outline the full plot area in red.}
+
+\item{preset}{Optional name in \link{kiyonaga_plot_presets}. Plot-type presets
+set only height / width ratio. Whole-figure presets \code{"slides"} and
+\code{"tiny"} select 14 pt and 6 pt text. Explicit \code{font_size} and
+\code{aspect_ratio} override preset defaults. Export size comes from
+\code{\link[=nice_save]{nice_save()}}'s \code{layout}, rather than from the plot-type preset.}
+
+\item{n_bars}{Bar count for \code{preset = "bars"} or \code{"bars_tall"}.
+Used only for bar ratios; \code{\link[=plot_bars]{plot_bars()}} supplies it automatically.}
+
+\item{tick_length}{Positive tick length in points, default 2. Ignored when
+ticks are off. Inside ticks extend into the panel; labels stay outside.}
 }
 \value{
 A ggplot2 theme.
@@ -58,4 +75,5 @@ library(ggplot2)
 ggplot(mtcars, aes(wt, mpg)) +
   geom_point(colour = kiyonaga_colors$ACCENT_GREEN) +
   theme_kiyonaga()
+theme_kiyonaga(ticks = "inside", tick_length = 2)
 }

@@ -6,8 +6,9 @@ Authors@R:
     person("Vivien", "Chopurian", email = "vchopurian@ucsd.edu",
            role = c("aut", "cre"))
 Description: A ggplot2 theme, colour palettes and plotting helpers that follow
-    the visual style of the Kiyonaga Lab: colour schemes, font sizes, bar plots with optional
-    individual data points, and figure export for manuscripts and slides.
+    the visual style of the Kiyonaga Lab: colour schemes, font sizes, summary plots,
+    fitted relationships, distributions, subject trajectories, and figure export
+    with optional separate legends for manuscripts and slides.
 License: MIT + file LICENSE
 URL: https://github.com/vsc04/kiyonagalabviz
 BugReports: https://github.com/vsc04/kiyonagalabviz/issues
@@ -24,8 +25,9 @@ Imports:
     tools,
     utils
 Suggests:
+    scales,
     svglite,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.1.1

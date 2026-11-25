@@ -14,7 +14,11 @@ plot_timecourse(
   palette = "accent",
   ribbon_alpha = 0.4,
   linewidth = 0.6,
-  ...
+  ...,
+  condition_groups = NULL,
+  preset = "timecourse",
+  subgroup = NULL,
+  legend = c("inside", "separate", "none")
 )
 }
 \arguments{
@@ -24,7 +28,9 @@ plot_timecourse(
 
 \item{y}{Name of the numeric outcome column.}
 
-\item{group}{Optional name of the condition column (converted to a factor).}
+\item{group}{Optional name of the primary-condition column (converted to a
+factor). With \code{subgroup}, selects the primary colour while subgroup
+selects its shade.}
 
 \item{window}{Optional numeric \code{c(start, end)} to shade, e.g. the window
 used in \code{\link[=average_window]{average_window()}}.}
@@ -33,11 +39,32 @@ used in \code{\link[=average_window]{average_window()}}.}
 
 \item{palette}{Line and ribbon palette for \code{group}, see \link{kiyonaga_palettes}.}
 
-\item{ribbon_alpha}{Transparency of the ribbons.}
+\item{ribbon_alpha}{Transparency of the ribbons. Set to \code{NULL} to preserve
+alpha embedded in the palette colours; a number overrides that alpha.}
 
 \item{linewidth}{Width of the mean lines.}
 
 \item{...}{Passed to \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}, e.g. \code{aspect_ratio = 0.6}.}
+
+\item{condition_groups}{Optional shade count for a combined condition column
+supplied as \code{group}, with levels in primary-then-shade order. With
+\code{subgroup}, this count is inferred and any supplied value must match it.
+See \link{kiyonaga_palette_groups}.}
+
+\item{preset}{Plot ratio preset, default \code{"timecourse"} (height / width
+0.68). \code{NULL} uses the theme's default. See \link{kiyonaga_plot_presets}.}
+
+\item{subgroup}{Optional name of a secondary-condition column. Requires
+\code{group} and a main palette from \link{kiyonaga_palette_groups}. Primary group
+levels select colours; subgroup levels select shades from dark to light.
+Factor levels control order; other columns use alphabetical/numeric order.
+Two subgroup levels are supported, or three with \code{accent_3}. All group-by-
+subgroup combinations retain their colours even when some are missing;
+the legend includes the complete set of combinations.}
+
+\item{legend}{\code{"inside"} keeps the legend in the plot (at the theme's
+position); \code{"separate"} hides it for export with \code{\link[=plot_legend]{plot_legend()}}; \code{"none"}
+hides it. Separate export does not write a file until \code{\link[=nice_save]{nice_save()}} is called.}
 }
 \value{
 A ggplot object.
@@ -51,4 +78,9 @@ window shaded in light grey. Styled with \code{\link[=theme_kiyonaga]{theme_kiyo
 sim <- simulate_lab_data()
 plot_timecourse(sim$timecourse, time = "time", y = "pupil",
                 group = "load", window = c(3, 5))
+d2 <- expand.grid(task = c("A", "B"), session = c("first", "second"),
+                  time = 1:3, subject = 1:4)
+d2$value <- seq_len(nrow(d2))
+plot_timecourse(d2, "time", "value", group = "task", subgroup = "session",
+                palette = "blue_yellow_2")
 }

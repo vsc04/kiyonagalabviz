@@ -6,33 +6,64 @@
 \alias{scale_colour_kiyonaga}
 \title{Kiyonaga Lab colour and fill scales for ggplot2}
 \usage{
-scale_fill_kiyonaga(palette = "sunset", discrete = TRUE, reverse = FALSE, ...)
+scale_fill_kiyonaga(
+  palette = "sunset",
+  discrete = TRUE,
+  reverse = FALSE,
+  ...,
+  alpha = NULL,
+  condition_groups = NULL
+)
 
-scale_color_kiyonaga(palette = "sunset", discrete = TRUE, reverse = FALSE, ...)
+scale_color_kiyonaga(
+  palette = "sunset",
+  discrete = TRUE,
+  reverse = FALSE,
+  ...,
+  alpha = NULL,
+  condition_groups = NULL
+)
 
 scale_colour_kiyonaga(
   palette = "sunset",
   discrete = TRUE,
   reverse = FALSE,
-  ...
+  ...,
+  alpha = NULL,
+  condition_groups = NULL
 )
 }
 \arguments{
 \item{palette}{Name of a palette in \link{kiyonaga_palettes}, or a character
-vector of hex colours.}
+vector of hex colours, including \verb{#RRGGBBAA} for transparency.}
 
 \item{discrete}{Logical; discrete (default) or continuous scale?}
 
 \item{reverse}{Logical; reverse the palette order?}
 
 \item{...}{Passed to \code{\link[ggplot2:discrete_scale]{ggplot2::discrete_scale()}} or
-\code{\link[ggplot2:scale_gradient]{ggplot2::scale_colour_gradientn()}}.}
+\code{\link[ggplot2:scale_colour_gradientn]{ggplot2::scale_colour_gradientn()}}.}
+
+\item{alpha}{Optional opacity multiplier, either one number between 0 and 1
+or one per full resolved palette colour. Applied before reversal; see
+\code{\link[=make_kiyonaga_palette]{make_kiyonaga_palette()}}. Leave geom \code{alpha} unset to preserve it.}
+
+\item{condition_groups}{Optional secondary-condition count for discrete
+scales, using the recorded opaque shades in \link{kiyonaga_palette_groups}.
+Use \code{2} for the paired families or \code{3} for \code{accent_3}. Factor levels
+or \code{limits} must follow primary category, then secondary category.}
 }
 \value{
 A ggplot2 scale.
 }
 \description{
 Kiyonaga Lab colour and fill scales for ggplot2
+}
+\details{
+Grouped scales order primary colours first, then shades from dark to light.
+For example, \code{blue_yellow_2} with \code{condition_groups = 2} gives dark blue,
+light blue, dark yellow, light yellow. Map combined conditions to one
+aesthetic and use factor levels or \code{limits} in this order.
 }
 \examples{
 library(ggplot2)
@@ -43,6 +74,6 @@ ggplot(mtcars, aes(factor(cyl), fill = factor(cyl))) +
 
 ggplot(mtcars, aes(wt, mpg, colour = hp)) +
   geom_point() +
-  scale_color_kiyonaga("sunset", discrete = FALSE) +
+  scale_color_kiyonaga("blue_red_continuous", discrete = FALSE) +
   theme_kiyonaga()
 }

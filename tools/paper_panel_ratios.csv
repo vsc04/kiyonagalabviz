@@ -1,0 +1,7 @@
+preset,file,pdf_page,figure,measured_height_width_ratio,aspect_ratio,reference_bars,method
+bars,PIIS0960982226006329.pdf,3,1D,1.551,1.55,2,Approximate axes ratio; rounded to two decimal places
+bars_tall,dong-kiyonaga-2024-ocular-working-memory-signals-are-flexible-to-behavioral-priority-and-subjective-imagery-strength.pdf,7,3D,3.076,3.08,2,Approximate axes ratio; rounded to two decimal places
+timecourse,dong-kiyonaga-2024-ocular-working-memory-signals-are-flexible-to-behavioral-priority-and-subjective-imagery-strength.pdf,9,4A,0.684,0.68,,Approximate axes ratio; rounded to two decimal places
+scatter,Chkhaidze_etal_WMpreprint.pdf,15,4e,0.923,0.92,,Approximate axes ratio; rounded to two decimal places
+distribution,dong-kiyonaga-2024-ocular-working-memory-signals-are-flexible-to-behavioral-priority-and-subjective-imagery-strength.pdf,7,3A,1.104,1,,Standardised to a square panel
+heatmap,PIIS2589004226012952.pdf,7,4A,1,1,,Square gaze-map inset

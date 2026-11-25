@@ -11,13 +11,18 @@ nice_save(
   font_size = NULL,
   custom = NULL,
   dpi = 600,
-  ...
+  ...,
+  preset = NULL,
+  n_bars = NULL
 )
 }
 \arguments{
 \item{filename}{File name ending in \code{.pdf}, \code{.png}, \code{.tiff}, \code{.svg}, \code{.eps}, ...}
 
-\item{plot}{A ggplot object. Defaults to the last plot.}
+\item{plot}{A ggplot object, or a legend grob from \code{\link[=plot_legend]{plot_legend()}}. Legends
+use their intrinsic dimensions unless \code{custom} is supplied; \code{layout} is
+ignored. Set their font size on the source plot before extraction.
+Defaults to the last plot.}
 
 \item{layout}{One of \code{"full col"}, \code{"half col"}, \code{"tiny"}, \code{"full page"},
 \code{"slides"}.}
@@ -32,6 +37,12 @@ sizes unchanged otherwise.}
 \item{dpi}{Resolution for raster formats.}
 
 \item{...}{Passed to \code{\link[ggplot2:ggsave]{ggplot2::ggsave()}}.}
+
+\item{preset}{Optional ratio or whole-figure name in \link{kiyonaga_plot_presets}.
+A ratio preset changes panel shape without changing text or figure width.}
+
+\item{n_bars}{Optional manual bar count for a bar ratio preset. By default,
+infer it from built bar layers, taking the largest count across panels.}
 }
 \value{
 The file name, invisibly.
@@ -48,11 +59,19 @@ Layouts (width in inches; height follows from the panel aspect ratio):
 \item \code{"slides"}: 4.4 in high, width follows from the aspect ratio.
 }
 
-Text size: \code{"slides"} sets all text to 14 pt and \code{"tiny"} to 6 pt (tick
-and legend labels at 85\% of that); other layouts keep the plot's own sizes
-(8 pt with \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}). Pass \code{font_size} to choose any size. This
-rescales text defined relative to the base size, as in \code{\link[=theme_kiyonaga]{theme_kiyonaga()}};
-point sizes, line widths and \code{geom_text()} labels are not changed.
+Text size: \code{"slides"} uses 14 pt base text and \code{"tiny"} uses 6 pt;
+other layouts preserve the plot's text sizes (8 pt in the default lab theme).
+Tick and legend labels are 85\% of the base size. Pass \code{font_size} to override.
+Point sizes, line widths and \code{geom_text()} labels are not rescaled.
+
+Plot-type presets in \link{kiyonaga_plot_presets} set only panel height / width
+ratio. The selected whole-figure \code{layout} determines physical panel size
+after accounting for axes, legends, margins and facet spacing. Bar presets
+adapt to the number of displayed bars; faceted plots use the largest bar
+count per panel. \code{\link[=plot_bars]{plot_bars()}} ratios are refreshed automatically on export
+after faceting, unless the ratio or bar count was explicitly overridden.
+Whole-figure presets can also be passed as \code{preset}, as an alias for \code{layout}.
+An explicit \code{layout} takes precedence over a whole-figure \code{preset}.
 
 Backgrounds are transparent; pass
 \code{bg = "white"} to override. \code{.pdf} is the preferred vector format; \code{.svg}
@@ -64,6 +83,7 @@ sim <- simulate_lab_data()
 p <- plot_bars(average_window(sim$timecourse), "load", "pupil")
 nice_save("pupil_bars.pdf", p, layout = "half col")
 nice_save("pupil_bars_slide.png", p, layout = "slides")   # 14 pt text
-nice_save("pupil_bars_talk.png", p, layout = "slides", font_size = 18)
+nice_save("pupil_bars_tiny.svg", p, layout = "tiny")     # 1 in wide, 6 pt
+nice_save("pupil_bars_tall.pdf", p, preset = "bars_tall", layout = "half col")
 }
 }

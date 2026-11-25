@@ -4,13 +4,33 @@
 \alias{make_kiyonaga_palette}
 \title{Create a palette function from a Kiyonaga Lab palette}
 \usage{
-make_kiyonaga_palette(palette = "sunset", reverse = FALSE)
+make_kiyonaga_palette(
+  palette = "sunset",
+  reverse = FALSE,
+  alpha = NULL,
+  condition_groups = NULL
+)
 }
 \arguments{
 \item{palette}{Name of a palette in \link{kiyonaga_palettes}, or a character
-vector of hex colours.}
+vector of hex colours, including \verb{#RRGGBBAA} for transparency.}
 
 \item{reverse}{Logical; reverse the palette order?}
+
+\item{alpha}{Optional opacity multiplier between 0 and 1, applied only when
+explicitly supplied. Use one number or one per full resolved palette colour
+(including secondary shades when grouped). Applied before reversal and
+selection; existing alpha is multiplied. \code{NULL} preserves source colours.}
+
+\item{condition_groups}{Optional secondary-condition count, \code{2} for the
+paired main families or \code{3} for \code{accent_3}. Uses recorded opaque
+shade combinations from \link{kiyonaga_palette_groups}. \code{NULL} uses the main
+palette alone. The returned function's \code{n} is the total number of
+primary-by-secondary combinations and must be a multiple of this value.
+Colours are grouped by primary category, then secondary category, using
+dark-to-light shade order. \code{reverse} reverses primary blocks
+while preserving secondary order. Grouped colours are not interpolated
+beyond the recorded categories.}
 }
 \value{
 A function of \code{n} returning a character vector of hex colours.
@@ -24,4 +44,8 @@ exact lab colours are used); otherwise colours are interpolated.
 pal <- make_kiyonaga_palette("sunset")
 pal(3)
 make_kiyonaga_palette("greys")(2)
+# Two primary categories, each with two recorded shades
+make_kiyonaga_palette("blue_yellow_2", condition_groups = 2)(4)
+# Three accents, each with dark, medium and light shades
+make_kiyonaga_palette("accent_3", condition_groups = 3)(9)
 }

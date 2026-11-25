@@ -1,6 +1,9 @@
+^renv$
+^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^docs$
 ^_pkgdown\.yml$
 ^tools$
+^papers$

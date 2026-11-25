@@ -18,11 +18,22 @@
 #' @param aspect_ratio Panel aspect ratio (y / x). `NULL` lets the panel fill
 #'   the available space.
 #' @param grid Logical; add light grey major grid lines?
-#' @param ticks Logical; draw axis ticks? The PI's style has none.
+#' @param ticks Tick direction: `"inside"`, `"outside"`, or `"off"` (AK style).
+#'   Logical values are also supported: `FALSE` (default) means `"off"`, and
+#'   `TRUE` means `"outside"`.
+#' @param tick_length Positive tick length in points, default 2. Ignored when
+#'   ticks are off. Inside ticks extend into the panel; labels stay outside.
 #' @param legend_position Legend position, e.g. `"top"` (default), `"right"`,
 #'   `"none"`.
 #' @param tiny_margins Logical; minimise margins around the panel.
 #' @param debug_area Logical; outline the full plot area in red.
+#' @param preset Optional name in [kiyonaga_plot_presets]. Plot-type presets
+#'   set only height / width ratio. Whole-figure presets `"slides"` and
+#'   `"tiny"` select 14 pt and 6 pt text. Explicit `font_size` and
+#'   `aspect_ratio` override preset defaults. Export size comes from
+#'   [nice_save()]'s `layout`, rather than from the plot-type preset.
+#' @param n_bars Bar count for `preset = "bars"` or `"bars_tall"`.
+#'   Used only for bar ratios; [plot_bars()] supplies it automatically.
 #'
 #' @return A ggplot2 theme.
 #' @export
@@ -32,18 +43,35 @@
 #' ggplot(mtcars, aes(wt, mpg)) +
 #'   geom_point(colour = kiyonaga_colors$ACCENT_GREEN) +
 #'   theme_kiyonaga()
+#' theme_kiyonaga(ticks = "inside", tick_length = 2)
 theme_kiyonaga <- function(font_size = 8, font = "sans", thickness = 0.5,
                            aspect_ratio = 1, grid = FALSE, ticks = FALSE,
                            legend_position = "top", tiny_margins = FALSE,
-                           debug_area = FALSE) {
+                           debug_area = FALSE, preset = NULL, n_bars = 2,
+                           tick_length = 2) {
+  if (is.logical(ticks) && length(ticks) == 1L && !is.na(ticks)) {
+    ticks <- if (ticks) "outside" else "off"
+  } else if (!is.character(ticks) || length(ticks) != 1L || is.na(ticks) ||
+             !ticks %in% c("inside", "outside", "off")) {
+    stop("`ticks` must be 'inside', 'outside', 'off', TRUE or FALSE.", call. = FALSE)
+  }
+  check_positive(tick_length, "tick_length")
+  settings <- get_plot_preset(preset)
+  if (!is.null(settings)) {
+    if (missing(font_size) && !is.null(settings$font_size)) font_size <- settings$font_size
+    if (missing(aspect_ratio) && settings$size_type == "ratio") {
+      aspect_ratio <- preset_aspect_ratio(settings, n_bars)
+    }
+  }
   font <- check_font(font)
   s <- theme_sizes(font_size, tiny_margins)
-  ggplot2::theme_classic(base_size = font_size, base_family = font) +
+  theme <- ggplot2::theme_classic(base_size = font_size, base_family = font) +
     theme_text_elements(s) +
-    theme_axis_elements(s, thickness, ticks) +
+    theme_axis_elements(s, thickness, ticks, tick_length) +
     theme_legend_elements(s, legend_position) +
     theme_panel_elements(s, grid, aspect_ratio, thickness) +
     theme_debug(debug_area)
+  theme
 }
 
 #' Fall back to "sans" if a font is not installed
@@ -96,15 +124,16 @@ theme_text_elements <- function(s) {
 
 #' Axis lines, ticks, titles and labels
 #' @noRd
-theme_axis_elements <- function(s, thickness, ticks) {
+theme_axis_elements <- function(s, thickness, ticks, tick_length) {
+  signed_length <- switch(ticks, inside = -tick_length, outside = tick_length, off = 0)
   axis_line <- ggplot2::element_line(
     colour = kiyonaga_colors$GREY_AXIS, linewidth = thickness,
     lineend = "square"
   )
   ggplot2::theme(
     axis.line = axis_line,
-    axis.ticks = if (ticks) axis_line else ggplot2::element_blank(),
-    axis.ticks.length = ggplot2::unit(if (ticks) 2 else 0, "pt"),
+    axis.ticks = if (ticks == "off") ggplot2::element_blank() else axis_line,
+    axis.ticks.length = ggplot2::unit(signed_length, "pt"),
     axis.title = ggplot2::element_text(size = ggplot2::rel(1)),
     axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = s$margin)),
     axis.title.y = ggplot2::element_text(margin = ggplot2::margin(r = s$margin)),
@@ -112,7 +141,11 @@ theme_axis_elements <- function(s, thickness, ticks) {
       size = ggplot2::rel(small_text_ratio), colour = kiyonaga_colors$GREY_TEXT
     ),
     axis.text.x = ggplot2::element_text(margin = ggplot2::margin(t = 3)),
-    axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 3))
+    axis.text.y = ggplot2::element_text(margin = ggplot2::margin(r = 3)),
+    axis.text.x.top = ggplot2::element_text(margin = ggplot2::margin(b = 3),
+                                           inherit.blank = TRUE),
+    axis.text.y.right = ggplot2::element_text(margin = ggplot2::margin(l = 3),
+                                             inherit.blank = TRUE)
   )
 }
 

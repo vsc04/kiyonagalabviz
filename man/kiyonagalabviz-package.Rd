@@ -6,7 +6,7 @@
 \alias{kiyonagalabviz-package}
 \title{kiyonagalabviz: Kiyonaga Lab Styled Publication-Ready Plots in R}
 \description{
-A ggplot2 theme, colour palettes and plotting helpers that follow the visual style of the Kiyonaga Lab: colour schemes, font sizes, bar plots with optional individual data points, and figure export for manuscripts and slides.
+A ggplot2 theme, colour palettes and plotting helpers that follow the visual style of the Kiyonaga Lab: colour schemes, font sizes, summary plots, fitted relationships, distributions, subject trajectories, and figure export with optional separate legends for manuscripts and slides.
 }
 \seealso{
 Useful links:
@@ -18,6 +18,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Vivien Chopurian \email{vchopurian@ucsd.edu}
+
+Authors:
+\itemize{
+  \item Vivien Chopurian \email{vchopurian@ucsd.edu}
+}
 
 }
 \keyword{internal}

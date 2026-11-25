@@ -16,6 +16,10 @@ preview_kiyonaga_palettes <- function(type = c("discrete", "continuous")) {
   old_par <- graphics::par(no.readonly = TRUE)
   on.exit(graphics::par(old_par))
   graphics::par(mar = c(0.5, 5, 0.5, 0.5))
+  margins <- graphics::par("mai")
+  margins[2] <- max(graphics::strwidth(names(kiyonaga_palettes),
+                                     units = "inches", cex = 0.8)) + 0.2
+  graphics::par(mai = margins)
   draw_palette_canvas(kiyonaga_palettes, type)
   for (i in seq_along(kiyonaga_palettes)) {
     draw_palette_row(kiyonaga_palettes[[i]], names(kiyonaga_palettes)[i],
@@ -39,7 +43,7 @@ draw_palette_row <- function(pal, label, row, type) {
     n <- length(pal)
     graphics::rect(0:(n - 1), row, 1:n, row + 0.8, col = pal, border = NA)
   } else {
-    ramp <- grDevices::colorRampPalette(pal)(256)
+    ramp <- interpolate_palette(pal, 256)
     x <- seq(0, 1, length.out = 257)
     graphics::rect(x[-257], row, x[-1], row + 0.8, col = ramp, border = NA)
   }

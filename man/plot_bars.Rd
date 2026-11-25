@@ -17,7 +17,13 @@ plot_bars(
   dodge_width = 0.8,
   jitter_width = 0.4,
   seed = 1,
-  ...
+  ...,
+  condition_groups = NULL,
+  preset = "bars",
+  n_bars = NULL,
+  subgroup = NULL,
+  legend = c("inside", "separate", "none"),
+  point_preset = "default"
 )
 }
 \arguments{
@@ -28,7 +34,8 @@ plot_bars(
 \item{y}{Name of the numeric outcome column.}
 
 \item{group}{Optional name of a grouping column; bars are dodged and filled
-by group (converted to a factor).}
+by group (converted to a factor). With \code{subgroup}, selects the primary
+colour while subgroup selects its shade.}
 
 \item{error}{Error bar type: \code{"se"} (default), \code{"sd"}, \code{"ci"} (95\% t-based)
 or \code{"none"}.}
@@ -38,9 +45,12 @@ or \code{"none"}.}
 \item{palette}{Fill palette for \code{group}, see \link{kiyonaga_palettes}. Defaults
 to the PI's \code{"greys"} (light/dark for two groups).}
 
-\item{point_style}{Named list overriding the point defaults:
-\code{size = 1}, \code{fill = "white"}, \code{colour = kiyonaga_colors$GREY_DARK},
-\code{alpha = 0.8}, \code{stroke = 0.3}.}
+\item{point_style}{Named list overriding \code{point_preset}. Default settings:
+\code{size = 1}, \code{shape = 21} (filled circle with an outline), \code{fill = "white"},
+\code{colour = kiyonaga_colors$GREY_DARK}, \code{alpha = 0.8}, \code{stroke = 0.3}.
+For larger individual dots use \code{point_style = list(size = 1.5)}.
+Set \code{fill = NULL} to inherit mapped group colours. Shape 16 is a solid
+circle using \code{colour}; shapes 21-25 use both \code{fill} and \code{colour}.}
 
 \item{bar_width}{Width of the bars.}
 
@@ -51,7 +61,36 @@ to the PI's \code{"greys"} (light/dark for two groups).}
 
 \item{seed}{Random seed for the jitter, so points do not move between runs.}
 
-\item{...}{Passed to \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}, e.g. \code{font_size = 12}.}
+\item{...}{Passed to \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}, e.g. \code{font_size = 12} or an
+explicit \code{aspect_ratio} override.}
+
+\item{condition_groups}{Optional shade count for a combined condition column
+supplied as \code{group}, with levels in primary-then-shade order. With
+\code{subgroup}, this count is inferred and any supplied value must match it.
+See \link{kiyonaga_palette_groups}.}
+
+\item{preset}{Plot ratio preset, default \code{"bars"}; use \code{"bars_tall"} for
+taller bars. See \link{kiyonaga_plot_presets}. \code{NULL} uses the theme's default.}
+
+\item{n_bars}{Optional manual bar count for the ratio. By default, count
+observed x/group/subgroup combinations with finite outcomes. \code{\link[=nice_save]{nice_save()}} updates
+automatic counts after faceting, using the largest bar count per panel.}
+
+\item{subgroup}{Optional name of a secondary-condition column. Requires
+\code{group} and a main palette from \link{kiyonaga_palette_groups}. Primary group
+levels select colours; subgroup levels select shades from dark to light.
+Factor levels control order; other columns use alphabetical/numeric order.
+Two subgroup levels are supported, or three with \code{accent_3}. All group-by-
+subgroup combinations retain their colours even when some are missing;
+the legend includes the complete set of combinations.}
+
+\item{legend}{\code{"inside"} keeps the legend in the plot (at the theme's
+position); \code{"separate"} hides it for export with \code{\link[=plot_legend]{plot_legend()}}; \code{"none"}
+hides it. Separate export does not write a file until \code{\link[=nice_save]{nice_save()}} is called.}
+
+\item{point_preset}{Individual-dot style from \link{kiyonaga_point_presets}:
+\code{"default"}, \code{"grey_filled"}, \code{"colour_outlined"}, or \code{"grey_small"}.
+The default preserves the original dot appearance.}
 }
 \value{
 A ggplot object; add layers, scales or labels as usual.
@@ -66,4 +105,11 @@ sim <- simulate_lab_data()
 d <- average_window(sim$timecourse, window = c(3, 5))
 plot_bars(d, x = "load", y = "pupil")
 plot_bars(d, x = "load", y = "pupil", group = "load", error = "ci")
+d2 <- expand.grid(task = c("A", "B"), session = c("first", "second"),
+                  subject = 1:4)
+d2$value <- seq_len(nrow(d2))
+plot_bars(d2, "task", "value", group = "task", subgroup = "session",
+          palette = "blue_yellow_2")
+plot_bars(d, "load", "pupil", group = "load",
+          point_style = list(size = 1.5))
 }

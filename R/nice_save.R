@@ -9,18 +9,29 @@
 #' - `"full col"` (3.6), `"half col"` (1.8), `"tiny"` (1), `"full page"` (7.2)
 #' - `"slides"`: 4.4 in high, width follows from the aspect ratio.
 #'
-#' Text size: `"slides"` sets all text to 14 pt and `"tiny"` to 6 pt (tick
-#' and legend labels at 85% of that); other layouts keep the plot's own sizes
-#' (8 pt with [theme_kiyonaga()]). Pass `font_size` to choose any size. This
-#' rescales text defined relative to the base size, as in [theme_kiyonaga()];
-#' point sizes, line widths and `geom_text()` labels are not changed.
+#' Text size: `"slides"` uses 14 pt base text and `"tiny"` uses 6 pt;
+#' other layouts preserve the plot's text sizes (8 pt in the default lab theme).
+#' Tick and legend labels are 85% of the base size. Pass `font_size` to override.
+#' Point sizes, line widths and `geom_text()` labels are not rescaled.
+#'
+#' Plot-type presets in [kiyonaga_plot_presets] set only panel height / width
+#' ratio. The selected whole-figure `layout` determines physical panel size
+#' after accounting for axes, legends, margins and facet spacing. Bar presets
+#' adapt to the number of displayed bars; faceted plots use the largest bar
+#' count per panel. [plot_bars()] ratios are refreshed automatically on export
+#' after faceting, unless the ratio or bar count was explicitly overridden.
+#' Whole-figure presets can also be passed as `preset`, as an alias for `layout`.
+#' An explicit `layout` takes precedence over a whole-figure `preset`.
 #'
 #' Backgrounds are transparent; pass
 #' `bg = "white"` to override. `.pdf` is the preferred vector format; `.svg`
 #' requires the svglite package.
 #'
 #' @param filename File name ending in `.pdf`, `.png`, `.tiff`, `.svg`, `.eps`, ...
-#' @param plot A ggplot object. Defaults to the last plot.
+#' @param plot A ggplot object, or a legend grob from [plot_legend()]. Legends
+#'   use their intrinsic dimensions unless `custom` is supplied; `layout` is
+#'   ignored. Set their font size on the source plot before extraction.
+#'   Defaults to the last plot.
 #' @param layout One of `"full col"`, `"half col"`, `"tiny"`, `"full page"`,
 #'   `"slides"`.
 #' @param font_size Base font size in pt for the saved figure. `NULL`
@@ -30,6 +41,10 @@
 #'   `layout`.
 #' @param dpi Resolution for raster formats.
 #' @param ... Passed to [ggplot2::ggsave()].
+#' @param preset Optional ratio or whole-figure name in [kiyonaga_plot_presets].
+#'   A ratio preset changes panel shape without changing text or figure width.
+#' @param n_bars Optional manual bar count for a bar ratio preset. By default,
+#'   infer it from built bar layers, taking the largest count across panels.
 #'
 #' @return The file name, invisibly.
 #' @export
@@ -40,12 +55,49 @@
 #' p <- plot_bars(average_window(sim$timecourse), "load", "pupil")
 #' nice_save("pupil_bars.pdf", p, layout = "half col")
 #' nice_save("pupil_bars_slide.png", p, layout = "slides")   # 14 pt text
-#' nice_save("pupil_bars_talk.png", p, layout = "slides", font_size = 18)
+#' nice_save("pupil_bars_tiny.svg", p, layout = "tiny")     # 1 in wide, 6 pt
+#' nice_save("pupil_bars_tall.pdf", p, preset = "bars_tall", layout = "half col")
 #' }
 nice_save <- function(filename, plot = ggplot2::last_plot(),
                       layout = c("full col", "half col", "tiny",
                                  "full page", "slides"),
-                      font_size = NULL, custom = NULL, dpi = 600, ...) {
+                      font_size = NULL, custom = NULL, dpi = 600, ...,
+                      preset = NULL, n_bars = NULL) {
+  if (inherits(plot, "grob")) {
+    if (!is.null(font_size) || !is.null(preset)) {
+      stop("Set legend fonts and presets on the source plot before extraction.", call. = FALSE)
+    }
+    dims <- if (is.null(custom)) {
+      c(sum(grid::convertWidth(plot$widths, "in", valueOnly = TRUE)),
+        sum(grid::convertHeight(plot$heights, "in", valueOnly = TRUE)))
+    } else custom
+    if (!is.numeric(dims) || length(dims) != 2 || any(!is.finite(dims)) || any(dims <= 0)) {
+      stop("Legend dimensions must be positive; supply `custom = c(width, height)`.", call. = FALSE)
+    }
+    do.call(ggplot2::ggsave,
+            c(list(filename = filename, plot = plot, width = dims[1],
+                   height = dims[2], units = "in", dpi = dpi),
+              device_args(filename), list(...)))
+    return(invisible(filename))
+  }
+  settings <- get_plot_preset(preset)
+  if (!is.null(settings) && settings$size_type == "figure" && missing(layout)) {
+    layout <- preset
+  }
+  ratio_settings <- if (!is.null(settings) && settings$size_type == "ratio") settings else NULL
+  if (is.null(ratio_settings) &&
+      identical(plot$theme$aspect.ratio, attr(plot, "kiyonaga_bar_aspect")) &&
+      !is.null(attr(plot, "kiyonaga_bar_preset"))) {
+    ratio_settings <- get_plot_preset(attr(plot, "kiyonaga_bar_preset"))
+  }
+  if (!is.null(ratio_settings)) {
+    if (!is.null(ratio_settings$reference_bars) && is.null(n_bars)) {
+      n_bars <- count_plot_bars(plot)
+    }
+    plot <- plot + ggplot2::theme(
+      aspect.ratio = preset_aspect_ratio(ratio_settings, n_bars)
+    )
+  }
   layout <- match.arg(layout)
   if (is.null(font_size)) font_size <- layout_font_size(layout)
   if (!is.null(font_size)) plot <- resize_text(plot, font_size)
@@ -65,8 +117,7 @@ nice_save <- function(filename, plot = ggplot2::last_plot(),
 #' Default base font size per layout (NULL = keep the plot's sizes)
 #' @noRd
 layout_font_size <- function(layout) {
-  sizes <- c("slides" = 14, "tiny" = 6)
-  if (layout %in% names(sizes)) sizes[[layout]] else NULL
+  get_plot_preset(layout)$font_size
 }
 
 #' Set the base text size; relative sizes in the theme follow
@@ -75,10 +126,10 @@ resize_text <- function(plot, font_size) {
   if (!is.numeric(font_size) || length(font_size) != 1 || font_size <= 0) {
     stop("`font_size` must be a single positive number.", call. = FALSE)
   }
-  plot + ggplot2::theme(
-    text = ggplot2::element_text(size = font_size),
-    legend.key.size = ggplot2::unit(font_size * small_text_ratio, "pt")
-  )
+  plot <- plot + ggplot2::theme(text = ggplot2::element_text(size = font_size))
+  legend_size <- ggplot2::calc_element("legend.text", plot$theme)$size
+  if (is.null(legend_size)) legend_size <- font_size * small_text_ratio
+  plot + ggplot2::theme(legend.key.size = ggplot2::unit(legend_size, "pt"))
 }
 
 #' Width and height in inches for a layout
@@ -90,25 +141,37 @@ figure_dims <- function(plot, layout, custom) {
     }
     return(list(width = custom[1], height = custom[2]))
   }
-  extra <- non_panel_size(plot)
+  geometry <- plot_geometry(plot)
+  extra <- geometry$extra
   ar <- panel_aspect_ratio(plot)
-  if (layout == "slides") {
-    return(list(width = (4.4 - extra$h) / ar + extra$w, height = 4.4))
+  settings <- get_plot_preset(layout)
+  if (is.null(settings$figure_width)) {
+    height <- settings$figure_height
+    width <- (height - extra$h) / ar * geometry$cols / geometry$rows + extra$w
+  } else {
+    width <- settings$figure_width
+    height <- (width - extra$w) * ar * geometry$rows / geometry$cols + extra$h
   }
-  width <- c("full col" = 3.6, "half col" = 1.8, "tiny" = 1,
-             "full page" = 7.2)[[layout]]
-  list(width = width, height = (width - extra$w) * ar + extra$h)
+  list(width = width, height = height)
 }
 
-#' Space (in) taken by titles, labels and legends outside the panel
+#' Fixed space and panel grid dimensions for an exported figure
 #' @noRd
-non_panel_size <- function(plot) {
+plot_geometry <- function(plot) {
   g <- ggplot2::ggplotGrob(plot)
+  panels <- g$layout[grepl("^panel($|-)", g$layout$name), ]
   list(
-    w = sum(grid::convertWidth(g$widths, "in", valueOnly = TRUE)),
-    h = sum(grid::convertHeight(g$heights, "in", valueOnly = TRUE))
+    extra = list(
+      w = sum(grid::convertWidth(g$widths, "in", valueOnly = TRUE)),
+      h = sum(grid::convertHeight(g$heights, "in", valueOnly = TRUE))
+    ),
+    cols = length(unique(panels$l)), rows = length(unique(panels$t))
   )
 }
+
+#' Space (in) taken by titles, labels and legends outside the panels
+#' @noRd
+non_panel_size <- function(plot) plot_geometry(plot)$extra
 
 #' Panel aspect ratio from the plot theme (1 if unset)
 #' @noRd
