@@ -180,7 +180,10 @@ For a one-panel test, connect to your presentation and save an example locally:
 
 ```r
 slides_auth(client = "~/.config/kiyonagalabviz/google_client.json")
-target <- slides_target("YOUR_PRESENTATION_ID", "SHARED_DEPLOYMENT_ID")
+target <- slides_target(
+  presentation = "https://docs.google.com/presentation/d/1Lt0ocJAwW7jSbtK5u6RorwneAHTAKPiL2Kr5mwEV8rY/edit",
+  deployment_id = "AKfycbx60gEbtu4nZI_3-qMGDRdgi9ji2IdUTqImQBpWl8hRPEuaernUsxiL8L1WskLP9iIuFg"
+)
 
 set.seed(1)
 example_data <- data.frame(time = seq(0, 10, length.out = 40))
@@ -192,7 +195,9 @@ nice_save(panel_file, p, custom = c(4, 3), dpi = 150)
 normalizePath(panel_file)
 ```
 
-In Slides, use **Insert → Image → Upload from computer** to insert that PNG.
+This uses the shared test presentation; replace `presentation` with your own
+Slides URL for your figures. In Slides, use **Insert → Image → Upload from
+computer** to insert that PNG.
 Set its **Alt text → Title** to `panel_A` (look under **Advanced options** if
 hidden). Move, resize or crop it; leave it ungrouped. Then run in R:
 

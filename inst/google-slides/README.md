@@ -14,12 +14,12 @@ You also need edit access to your presentation.
 
    ```r
    install.packages("remotes")
-   remotes::install_github("vsc04/kiyonagalabviz")
+   remotes::install_github(
+   "vsc04/kiyonagalabviz",
+   ref = "feature/google-slides-layout"
+   )
    install.packages(c("httr", "jsonlite", "png"))
    ```
-
-   The maintainer must publish the feature first. If it is still on the feature
-   branch, add `ref = "feature/google-slides-layout"` to `install_github()`.
 
 2. Save the supplied JSON outside the repository as
    `~/.config/kiyonagalabviz/google_client.json`. On a Mac, create/open this
@@ -35,12 +35,17 @@ You also need edit access to your presentation.
    ```r
    library(kiyonagalabviz)
    slides_auth(client = "~/.config/kiyonagalabviz/google_client.json")
-   target <- slides_target("YOUR_GOOGLE_SLIDES_URL", "SHARED_DEPLOYMENT_ID")
+   target <- slides_target(
+     presentation = "https://docs.google.com/presentation/d/1Lt0ocJAwW7jSbtK5u6RorwneAHTAKPiL2Kr5mwEV8rY/edit",
+     deployment_id = "AKfycbx60gEbtu4nZI_3-qMGDRdgi9ji2IdUTqImQBpWl8hRPEuaernUsxiL8L1WskLP9iIuFg"
+   )
    slides_panels(target)
    ```
 
 Each person keeps their own token locally; never share a cached token. In each
-new R session, repeat step 3. Continue with [Test one panel](#test-one-panel);
+new R session, repeat step 3. This example uses the shared test presentation;
+replace `presentation` with your own Slides URL for your figures. Continue with
+[Test one panel](#test-one-panel);
 skip all maintainer setup below.
 
 
