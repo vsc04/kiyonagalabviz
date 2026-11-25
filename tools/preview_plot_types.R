@@ -5,11 +5,18 @@ d <- expand.grid(subject = factor(1:12), task = factor(c("A", "B")),
                  session = factor(c("1", "2")), time = seq(0, 1, length.out = 21))
 d$value <- as.integer(d$task) + as.integer(d$session) * 0.4 +
   sin(d$time * 4) + as.integer(d$subject) * 0.07 + rnorm(nrow(d), sd = 0.35)
+scatter_example <- expand.grid(time = seq(0, 1, length.out = 12),
+                                task = factor(c("A", "B")), subject = 1:2)
+scatter_example$value <- with(scatter_example,
+  1 + 0.5 * as.integer(task) + time * ifelse(task == "A", 1.2, -0.6) +
+    0.2 * sin(seq_len(nrow(scatter_example)) * 1.7))
 plots <- list(
   "Mean bars" = plot_bars(d, "task", "value", group = "task", subgroup = "session",
                            palette = "blue_yellow_2", show_points = FALSE),
   "Mean points" = plot_means(d, "task", "value", group = "task", subgroup = "session",
                              palette = "blue_yellow_2", error = "ci"),
+  "Scatterplot" = plot_scatter(scatter_example, "time", "value", group = "task", fit = TRUE,
+                                palette = "skyblue_orange"),
   "Fits and binned means" = plot_predictions(d, "time", "value", group = "task",
                                              subgroup = "session", palette = "blue_yellow_2"),
   "Histogram and density" = plot_histogram(d, "value", group = "task", density = TRUE),
@@ -20,16 +27,18 @@ plots <- list(
                                 rolling_window = 0.15),
   "Timecourse" = plot_timecourse(d, "time", "value", group = "task", window = c(0.6, 0.8))
 )
-svglite::svglite("man/figures/plot-types.svg", width = 9, height = 9)
+overview_columns <- 2
+overview_rows <- ceiling(length(plots) / overview_columns)
+svglite::svglite("man/figures/plot-types.svg", width = 9, height = 3 * overview_rows)
 draw_plot_types <- function() {
   grid::grid.newpage()
-  grid::pushViewport(grid::viewport(layout = grid::grid.layout(3, 3)))
+  grid::pushViewport(grid::viewport(layout = grid::grid.layout(overview_rows, overview_columns)))
   for (i in seq_along(plots)) {
     p <- plots[[i]] + ggplot2::labs(title = names(plots)[i]) +
       ggplot2::theme(plot.margin = ggplot2::margin(8, 12, 8, 8))
     print(p, newpage = FALSE,
-          vp = grid::viewport(layout.pos.row = (i - 1) %/% 3 + 1,
-                               layout.pos.col = (i - 1) %% 3 + 1))
+          vp = grid::viewport(layout.pos.row = (i - 1) %/% overview_columns + 1,
+                               layout.pos.col = (i - 1) %% overview_columns + 1))
   }
   grid::popViewport()
 }

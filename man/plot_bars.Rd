@@ -23,7 +23,7 @@ plot_bars(
   n_bars = NULL,
   subgroup = NULL,
   legend = c("inside", "separate", "none"),
-  point_preset = "default"
+  point_preset = "grey_filled"
 )
 }
 \arguments{
@@ -46,11 +46,11 @@ or \code{"none"}.}
 to the PI's \code{"greys"} (light/dark for two groups).}
 
 \item{point_style}{Named list overriding \code{point_preset}. Default settings:
-\code{size = 1}, \code{shape = 21} (filled circle with an outline), \code{fill = "white"},
-\code{colour = kiyonaga_colors$GREY_DARK}, \code{alpha = 0.8}, \code{stroke = 0.3}.
-For larger individual dots use \code{point_style = list(size = 1.5)}.
-Set \code{fill = NULL} to inherit mapped group colours. Shape 16 is a solid
-circle using \code{colour}; shapes 21-25 use both \code{fill} and \code{colour}.}
+\code{size = 1}, \code{shape = 16} (solid circle), \code{fill = NA},
+\code{colour = kiyonaga_colors$GREY_DARK}, \code{alpha = 0.6}, \code{stroke = 0}.
+Set size explicitly with \code{point_style = list(size = 1.5)}.
+Use \code{point_preset = "colour_outlined"} for mapped group fills. Shape 16
+uses \code{colour}; shapes 21-25 use both \code{fill} and \code{colour}.}
 
 \item{bar_width}{Width of the bars.}
 
@@ -89,8 +89,9 @@ position); \code{"separate"} hides it for export with \code{\link[=plot_legend]{
 hides it. Separate export does not write a file until \code{\link[=nice_save]{nice_save()}} is called.}
 
 \item{point_preset}{Individual-dot style from \link{kiyonaga_point_presets}:
-\code{"default"}, \code{"grey_filled"}, \code{"colour_outlined"}, or \code{"grey_small"}.
-The default preserves the original dot appearance.}
+\code{"charite"}, \code{"grey_filled"} (default), \code{"colour_outlined"}, \code{"grey_small"},
+\code{"colour_filled"} or \code{"colour_small"}.
+\code{"charite"} selects the original white-filled dot style.}
 }
 \value{
 A ggplot object; add layers, scales or labels as usual.

@@ -31,7 +31,7 @@ plot_means <- function(data, x, y, group = NULL, error = c("se", "sd", "ci", "no
                        seed = 1, point_style = list(), ..., subgroup = NULL,
                        condition_groups = NULL, preset = "scatter",
                        legend = c("inside", "separate", "none"),
-                       mean_line = FALSE, mean_line_width = NULL, point_preset = "default") {
+                       mean_line = FALSE, mean_line_width = NULL, point_preset = "grey_filled") {
   error <- match.arg(error)
   legend <- match.arg(legend)
   if (!is.logical(mean_line) || length(mean_line) != 1L || is.na(mean_line)) {

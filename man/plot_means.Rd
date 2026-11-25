@@ -25,7 +25,7 @@ plot_means(
   legend = c("inside", "separate", "none"),
   mean_line = FALSE,
   mean_line_width = NULL,
-  point_preset = "default"
+  point_preset = "grey_filled"
 )
 }
 \arguments{
@@ -57,11 +57,11 @@ or \code{"none"}.}
 \item{seed}{Random seed for the jitter, so points do not move between runs.}
 
 \item{point_style}{Named list overriding \code{point_preset}. Default settings:
-\code{size = 1}, \code{shape = 21} (filled circle with an outline), \code{fill = "white"},
-\code{colour = kiyonaga_colors$GREY_DARK}, \code{alpha = 0.8}, \code{stroke = 0.3}.
-For larger individual dots use \code{point_style = list(size = 1.5)}.
-Set \code{fill = NULL} to inherit mapped group colours. Shape 16 is a solid
-circle using \code{colour}; shapes 21-25 use both \code{fill} and \code{colour}.}
+\code{size = 1}, \code{shape = 16} (solid circle), \code{fill = NA},
+\code{colour = kiyonaga_colors$GREY_DARK}, \code{alpha = 0.6}, \code{stroke = 0}.
+Set size explicitly with \code{point_style = list(size = 1.5)}.
+Use \code{point_preset = "colour_outlined"} for mapped group fills. Shape 16
+uses \code{colour}; shapes 21-25 use both \code{fill} and \code{colour}.}
 
 \item{...}{Passed to \code{\link[=theme_kiyonaga]{theme_kiyonaga()}}, e.g. \code{font_size = 12} or an
 explicit \code{aspect_ratio} override.}
@@ -95,8 +95,9 @@ individual-dot column with the default jitter. Dodging divides the width
 among the groups at each x. Increase it for a longer marker.}
 
 \item{point_preset}{Individual-dot style from \link{kiyonaga_point_presets}:
-\code{"default"}, \code{"grey_filled"}, \code{"colour_outlined"}, or \code{"grey_small"}.
-The default preserves the original dot appearance.}
+\code{"charite"}, \code{"grey_filled"} (default), \code{"colour_outlined"}, \code{"grey_small"},
+\code{"colour_filled"} or \code{"colour_small"}.
+\code{"charite"} selects the original white-filled dot style.}
 }
 \value{
 A ggplot object. Use \code{\link[=plot_legend]{plot_legend()}} for a separate legend.

@@ -2,19 +2,22 @@
 sim <- simulate_lab_data(n_subjects = 12)
 heatmap <- expand.grid(x = 1:7, y = 1:7)
 heatmap$value <- with(heatmap, sin(x / 2) * cos(y / 2))
+scatter_example <- data.frame(time = seq(0, 1, length.out = 24),
+                               condition = factor(rep("A", 24)))
+scatter_example$value <- with(scatter_example,
+  1 + 0.8 * time + 0.15 * sin(seq_len(nrow(scatter_example)) * 1.7))
 
 preset_examples <- list(
   timecourse = plot_timecourse(sim$timecourse, "time", "pupil", group = "load",
                                palette = "skyblue_orange") +
     ggplot2::labs(x = "Time (s)", y = "Pupil size (mm)", colour = "WM load", fill = "WM load"),
-  scatter = ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) +
-    ggplot2::geom_point(colour = kiyonaga_colors$IMAGERY_BLUE, size = 1) +
-    ggplot2::geom_smooth(method = "lm", formula = y ~ x,
-                         colour = kiyonaga_colors$IMAGERY_BLUE, linewidth = 0.5) +
-    ggplot2::labs(x = "Weight", y = "Fuel economy") + theme_kiyonaga(preset = "scatter"),
+  scatter = plot_scatter(scatter_example, "time", "value", group = "condition", fit = TRUE,
+                           palette = "skyblue_orange", point_preset = "colour_outlined",
+                           legend = "none") +
+    ggplot2::labs(x = "Time", y = "Value"),
   distribution = ggplot2::ggplot(iris, ggplot2::aes(Sepal.Length, fill = Species)) +
     ggplot2::geom_density(alpha = 0.4, linewidth = 0.3) + scale_fill_kiyonaga("accent_2") +
-    ggplot2::labs(x = "Sepal length", y = "Density") +
+    ggplot2::labs(x = "Value", y = "Density") +
     theme_kiyonaga(preset = "distribution", legend_position = "none"),
   heatmap = plot_heatmap(heatmap, "x", "y", "value", show_axes = FALSE) +
     ggplot2::labs(fill = "Signal")
@@ -74,6 +77,18 @@ bar_frames <- lapply(c("bars", "bars_tall"), function(preset) {
 })
 names(bar_frames) <- c("bars", "bars_tall")
 ratio_frames <- lapply(preset_examples, ratio_example_frame, panel_height = panel_height)
+# Measure space below each panel so the x axes align even if label heights differ.
+timecourse_row_frames <- ratio_frames[c("timecourse", "scatter")]
+timecourse_row_below <- vapply(timecourse_row_frames, function(frame) {
+  g <- frame$plot
+  panel_bottom <- max(g$layout$b[grepl("^panel($|-)", g$layout$name)])
+  rows <- seq.int(panel_bottom + 1, length(g$heights))
+  sum(grid::convertHeight(g$heights[rows], "in", valueOnly = TRUE))
+}, numeric(1))
+timecourse_row_above <- vapply(timecourse_row_frames, function(frame) frame$height,
+                                numeric(1)) - timecourse_row_below
+timecourse_row_height <- max(timecourse_row_above) + max(timecourse_row_below)
+
 layout_frames <- lapply(c("full col", "half col", "tiny", "slides", "full page"),
                          function(name) example_frame(layout_example, name))
 names(layout_frames) <- c("full col", "half col", "tiny", "slides", "full page")
@@ -84,7 +99,7 @@ row_tops["bars_tall"] <- row_tops["bars"] + 0.8 +
 row_tops["timecourse"] <- row_tops["bars_tall"] + 0.8 +
   max(vapply(bar_frames$bars_tall, function(frame) frame$height, numeric(1))) + row_gap
 row_tops["distribution"] <- row_tops["timecourse"] + 0.4 +
-  max(ratio_frames$timecourse$height, ratio_frames$scatter$height) + row_gap
+  timecourse_row_height + row_gap
 layout_heading <- row_tops["distribution"] + 0.4 +
   max(ratio_frames$distribution$height, ratio_frames$heatmap$height) + row_gap
 layout_top <- layout_heading + 0.8
@@ -128,7 +143,12 @@ draw_plot_presets <- function() {
     comparison_label(name, left, top, 10, TRUE)
     comparison_label(sprintf("Panel height %.2f in | ratio %.2f | base 8 pt",
                                panel_height, p$theme$aspect.ratio), left, top + 0.2, 7)
-    comparison_frame(ratio_frames[[name]], left, top + 0.4)
+    frame_top <- top + 0.4
+    if (name %in% c("timecourse", "scatter")) {
+      # Keep headings aligned and put both panels' x axes on one baseline.
+      frame_top <- frame_top + max(timecourse_row_above) - timecourse_row_above[[name]]
+    }
+    comparison_frame(ratio_frames[[name]], left, frame_top)
   }
   comparison_label("Whole-figure layouts", 0.25, layout_heading, 14, TRUE)
   comparison_label("Sizes include axes, labels and margins. These examples share a 0.6 panel ratio.",

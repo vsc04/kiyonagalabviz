@@ -16,14 +16,15 @@
 #' @param palette Fill palette for `group`, see [kiyonaga_palettes]. Defaults
 #'   to the PI's `"greys"` (light/dark for two groups).
 #' @param point_preset Individual-dot style from [kiyonaga_point_presets]:
-#'   `"default"`, `"grey_filled"`, `"colour_outlined"`, or `"grey_small"`.
-#'   The default preserves the original dot appearance.
+#'   `"charite"`, `"grey_filled"` (default), `"colour_outlined"`, `"grey_small"`,
+#'   `"colour_filled"` or `"colour_small"`.
+#'   `"charite"` selects the original white-filled dot style.
 #' @param point_style Named list overriding `point_preset`. Default settings:
-#'   `size = 1`, `shape = 21` (filled circle with an outline), `fill = "white"`,
-#'   `colour = kiyonaga_colors$GREY_DARK`, `alpha = 0.8`, `stroke = 0.3`.
-#'   For larger individual dots use `point_style = list(size = 1.5)`.
-#'   Set `fill = NULL` to inherit mapped group colours. Shape 16 is a solid
-#'   circle using `colour`; shapes 21-25 use both `fill` and `colour`.
+#'   `size = 1`, `shape = 16` (solid circle), `fill = NA`,
+#'   `colour = kiyonaga_colors$GREY_DARK`, `alpha = 0.6`, `stroke = 0`.
+#'   Set size explicitly with `point_style = list(size = 1.5)`.
+#'   Use `point_preset = "colour_outlined"` for mapped group fills. Shape 16
+#'   uses `colour`; shapes 21-25 use both `fill` and `colour`.
 #' @param bar_width Width of the bars.
 #' @param dodge_width Dodging width between groups.
 #' @param jitter_width Horizontal spread of the points (passed to
@@ -73,7 +74,7 @@ plot_bars <- function(data, x, y, group = NULL,
                       point_style = list(), bar_width = 0.7,
                       dodge_width = 0.8, jitter_width = 0.4, seed = 1, ...,
                       condition_groups = NULL, preset = "bars", n_bars = NULL,
-                      subgroup = NULL, legend = c("inside", "separate", "none"), point_preset = "default") {
+                      subgroup = NULL, legend = c("inside", "separate", "none"), point_preset = "grey_filled") {
   legend <- match.arg(legend)
   error <- match.arg(error)
   check_columns(data, c(x, y, group, subgroup), numeric = y)
@@ -99,6 +100,11 @@ plot_bars <- function(data, x, y, group = NULL,
     ggplot2::labs(fill = grouping$title) +
     theme_kiyonaga(..., preset = preset, n_bars = n_bars) +
     ggplot2::theme(axis.title.x = ggplot2::element_text(face = "bold"))
+  if (show_points && !is.null(group) && is.null(style$colour)) {
+    p <- p + scale_colour_kiyonaga(palette, condition_groups = condition_groups,
+                                    limits = grouping$limits) +
+      ggplot2::labs(colour = grouping$title)
+  }
   if (automatic && !is.null(preset) &&
       !is.null(get_plot_preset(preset)$reference_bars) &&
       !"aspect_ratio" %in% names(list(...))) {
@@ -132,7 +138,7 @@ bar_layer <- function(group, bar_width, dodge_width) {
 #' Default look of the individual data points
 #' @noRd
 default_point_style <- function() {
-  kiyonaga_point_presets$default
+  kiyonaga_point_presets$grey_filled
 }
 
 #' Jittered individual data points, dodged like the bars
@@ -146,7 +152,12 @@ point_layer <- function(group, style, dodge_width, jitter_width, seed) {
       dodge.width = dodge_width, seed = seed
     )
   }
-  args <- c(list(position = position, show.legend = FALSE),
+  mapping <- NULL
+  if (is.null(style$colour)) {
+    if (is.null(group)) style$colour <- kiyonaga_colors$GREY_DARK
+    else mapping <- ggplot2::aes(colour = .data[[group]])
+  }
+  args <- c(list(mapping = mapping, position = position, show.legend = FALSE),
               style[c("shape", "size", "fill", "colour", "alpha", "stroke")])
   # Omit NULL settings so a mapped colour/fill can be inherited.
   args <- args[!vapply(args, is.null, logical(1))]

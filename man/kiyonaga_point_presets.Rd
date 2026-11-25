@@ -8,15 +8,19 @@ kiyonaga_point_presets
 }
 \description{
 A named list of styles for \code{point_preset} in \code{\link[=plot_bars]{plot_bars()}}, \code{\link[=plot_means]{plot_means()}}
-and \code{\link[=plot_boxplots]{plot_boxplots()}}. \code{point_style} overrides individual preset settings.
+and \code{\link[=plot_boxplots]{plot_boxplots()}}, and in \code{\link[=plot_scatter]{plot_scatter()}}. \code{point_style} overrides
+individual preset settings.
 }
 \details{
 \itemize{
-\item \code{default}: existing white-filled circles with dark grey outlines.
-\item \code{grey_filled}: grey solid dots, following Dong & Kiyonaga (2024), Fig. 3D.
-\item \code{colour_outlined}: larger group-coloured circles with grey outlines,
+\item \code{charite}: the original package style, white-filled circles with dark grey outlines.
+\item \code{grey_filled} (default for bars, means and boxplots): grey solid dots, following Dong & Kiyonaga (2024), Fig. 3D.
+\item \code{colour_outlined} (scatterplot default): group-coloured circles with grey outlines,
 following Yang et al. (2026), Fig. 1D.
 \item \code{grey_small}: small, faint grey dots, following Dong et al. (2026), Fig. 1D-F.
+\item \code{colour_filled}: solid dots using mapped group colours, size 1, alpha 0.6.
+\item \code{colour_small}: small solid dots using mapped group
+colours, size 0.5, alpha 0.4.
 }
 
 Paper-based styles are visual approximations, not recovered plotting code.
@@ -25,6 +29,9 @@ because the original alpha cannot be determined from flattened PDF colours.
 Presets change individual dots only, not summary points, error bars or lines.
 The \code{colour_outlined} fill inherits the mapped group palette; supply \code{group}
 for coloured dots. Without grouping it uses the geom's unfilled default.
+\code{colour_filled} and \code{colour_small} inherit the palette through \code{colour};
+without grouping they use dark grey. Their sizes and opacity match the
+corresponding grey presets.
 }
 \examples{
 kiyonaga_point_presets$grey_filled

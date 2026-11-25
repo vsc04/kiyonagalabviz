@@ -87,3 +87,54 @@ test_that("mean markers and dot presets support facets and separate legends", {
   expect_s3_class(plot_legend(p), "gtable")
   expect_no_warning(ggplot2::ggplotGrob(p))
 })
+
+test_that("charite retains the old style and helpers use their intended defaults", {
+  expect_false("default" %in% names(kiyonaga_point_presets))
+  expect_equal(kiyonaga_point_presets$charite,
+               list(size = 1, shape = 21, fill = "white", colour = kiyonaga_colors$GREY_DARK,
+                    alpha = 0.8, stroke = 0.3))
+  d <- point_data()
+  for (plot in list(plot_bars, plot_means, plot_boxplots, plot_scatter)) {
+    # Scatter needs a numeric coordinate; the other helpers convert x to factors.
+    d$x <- as.integer(factor(d$x))
+    args <- list(data = d, x = "x", y = "y", group = "task")
+    if (!identical(plot, plot_scatter)) args$show_points <- TRUE
+    default <- do.call(plot, args)
+    preset <- if (identical(plot, plot_scatter)) "colour_outlined" else "grey_filled"
+    selected <- do.call(plot, c(args, list(point_preset = preset)))
+    points <- which(vapply(default$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))[1]
+    dots <- ggplot2::layer_data(default, points)
+    expect_equal(dots, ggplot2::layer_data(selected, points))
+    expect_equal(unique(dots$size), kiyonaga_point_presets[[preset]]$size)
+    if (identical(plot, plot_scatter)) {
+      expect_setequal(dots$fill, make_kiyonaga_palette("accent")(2))
+    } else expect_equal(unique(dots$colour), kiyonaga_colors$GREY_DARK)
+    expect_equal(unique(dots$alpha), kiyonaga_point_presets[[preset]]$alpha)
+    old <- do.call(plot, c(args, list(point_preset = "charite")))
+    expect_equal(unique(ggplot2::layer_data(old, points)$fill), "white")
+  }
+})
+
+test_that("solid colour presets use the selected palette across all dot helpers", {
+  d <- point_data()
+  d$x <- as.integer(factor(d$x))
+  expected <- make_kiyonaga_palette("blue_yellow_2", condition_groups = 2)(4)
+  for (plot in list(plot_bars, plot_means, plot_boxplots, plot_scatter)) {
+    for (preset in c("colour_filled", "colour_small")) {
+      args <- list(data = d, x = "x", y = "y", group = "task", subgroup = "session",
+                   palette = "blue_yellow_2", point_preset = preset)
+      if (!identical(plot, plot_scatter)) args$show_points <- TRUE
+      p <- do.call(plot, args)
+      index <- which(vapply(p$layers, function(l) inherits(l$geom, "GeomPoint"), logical(1)))[1]
+      dots <- ggplot2::layer_data(p, index)
+      expect_setequal(dots$colour, expected)
+      expect_equal(unique(dots$shape), 16)
+      expect_equal(unique(dots$size), kiyonaga_point_presets[[preset]]$size)
+      expect_equal(unique(dots$alpha), kiyonaga_point_presets[[preset]]$alpha)
+      expect_no_warning(ggplot2::ggplotGrob(p))
+      args$group <- args$subgroup <- NULL
+      ungrouped <- do.call(plot, args)
+      expect_equal(unique(ggplot2::layer_data(ungrouped, index)$colour), kiyonaga_colors$GREY_DARK)
+    }
+  }
+})

@@ -5,6 +5,7 @@ test_that("all helpers support keeping, extracting and hiding legends", {
     function(...) plot_bars(d, "x", "y", group = "group", ...),
     function(...) plot_timecourse(d, "x", "y", group = "group", ...),
     function(...) plot_means(d, "x", "y", group = "group", ...),
+    function(...) plot_scatter(d, "x", "y", group = "group", fit = TRUE, ...),
     function(...) plot_predictions(d, "x", "y", group = "group", ...),
     function(...) plot_histogram(d, "y", group = "group", ...),
     function(...) plot_density(d, "y", group = "group", ...),

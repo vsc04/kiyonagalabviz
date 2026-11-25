@@ -47,6 +47,7 @@ a palette name and a plot ratio `preset`. The theme and scales also work with an
 | `theme_kiyonaga()` | Lab theme: 8 pt titles, 6.8 pt tick/legend labels, light grey axes, optional inside/outside ticks (off by default), and a top legend with a bold title |
 | `plot_bars()` | Mean bars with SE, SD, CI or no error bars, plus optional individual dots |
 | `plot_means()` | Mean points with SE, SD, CI or no error bars, optional individual dots and a horizontal mean marker |
+| `plot_scatter()` | Individual observations with optional fitted lines and confidence bands |
 | `plot_predictions()` | Fitted lines and confidence bands with optional binned means and selectable error bars |
 | `plot_histogram()` | Histograms with an optional density curve |
 | `plot_density()` | Kernel density distributions |
@@ -80,12 +81,13 @@ Defaults use 0.6 mm mean/fitted lines, 0.5 mm intervals, box outlines and subjec
 connections, and 1.5 mm mean points. These are adjustable through `linewidth`
 and `point_size` where applicable. Plot-type ratios share the standard lab
 fonts; distribution plots use `"distribution"`, means/predictions/paired plots
-use `"scatter"`, and line plots use `"timecourse"`.
+and scatterplots use `"scatter"`, and line plots use `"timecourse"`.
 
 ```r
 plot_means(bars, "load", "pupil", group = "load", error = "ci")
 plot_histogram(mtcars, "mpg", bins = 10, density = TRUE)
 plot_density(mtcars, "mpg", group = "am")
+plot_scatter(mtcars, "wt", "mpg", group = "am", fit = TRUE)
 plot_boxplots(mtcars, "cyl", "mpg", group = "am")
 plot_paired(bars, "load", "pupil", subject = "subject")
 
@@ -97,6 +99,24 @@ plot_predictions(mtcars, "wt", "mpg", group = "am", bins = 5,
 plot_lines(sim$timecourse, "time", "pupil", subject = "subject",
            group = "load", rolling_window = 0.1)
 ```
+
+`plot_scatter()` draws one point per observation, with no binning or jitter.
+Default points use `colour_outlined` (size 1.5 mm, alpha 0.8); use `point_style`,
+`point_size`, or a named `point_preset` to change them. With the colour presets,
+`group` selects primary colours and `subgroup` their shades. Grey presets keep
+the dots grey; grouped fits still use the palette. If dots should represent subjects, average
+the data to one row per subject and condition first.
+
+```r
+plot_scatter(d, "pupil", "accuracy", group = "load", fit = TRUE,
+             palette = "skyblue_orange", point_style = list(size = 1.5))
+```
+
+`fit = TRUE` adds separate linear fits per condition and 95% confidence bands;
+use `confidence = FALSE` to hide the bands, `conf` to change their level, or
+`method`, `formula`, and `method_args` to choose another fit. Fits treat rows
+as independent observations. Use `plot_predictions(predictions = ...)` for
+intervals from an existing model. `legend = "separate"` supports separate export.
 
 `plot_predictions()` defaults to linear fits and five equal-width bins, with
 95% confidence bands and t-based intervals for bin means. Set `error` to
@@ -136,19 +156,24 @@ theme_kiyonaga(ticks = "inside", tick_length = 2)
 plot_bars(bars, "load", "pupil", ticks = "outside")
 ```
 
-Subject points in bars, mean plots and boxplots share the same `point_preset`
-options. The default preserves the original 1 mm white-filled circles.
+Subject points in bars, mean plots, boxplots and scatterplots share the same
+`point_preset` options. Bars, mean plots and boxplots default to `grey_filled`;
+scatterplots default to `colour_outlined`. `charite` selects the original 1 mm
+white-filled circles.
 `point_style = list(size = 1.5)` overrides the preset size; `bar_width` controls
 bar width independently.
 
 | `point_preset` | Individual-dot appearance | Size | Alpha |
 |---|---|---|---|
-| `"default"` | White circles, dark grey outlines | 1 mm | 0.8 |
-| `"grey_filled"` | Solid grey circles | 1 mm | 0.6 |
-| `"colour_outlined"` | Group-coloured circles, grey outlines | 1.5 mm | 0.8 |
+| `"charite"` | White circles, dark grey outlines | 1 mm | 0.8 |
+| `"grey_filled"` (bars/means/boxplots default) | Solid grey circles | 1 mm | 0.6 |
+| `"colour_outlined"` (scatterplot default) | Group-coloured circles, grey outlines | 1.5 mm | 0.8 |
 | `"grey_small"` | Small faint grey circles | 0.5 mm | 0.4 |
+| `"colour_filled"` | Solid group-coloured circles | 1 mm | 0.6 |
+| `"colour_small"` | Small faint group-coloured circles | 0.5 mm | 0.4 |
 
-Presets affect
+The colour presets use the selected group palette and subgroup shades. Without
+grouping, `colour_filled` and `colour_small` use dark grey. Presets affect
 individual dots only. `point_style` overrides any preset field.
 
 ![Individual-dot presets](man/figures/point-presets.svg)
@@ -174,8 +199,10 @@ In `plot_means()`, `mean_line = TRUE` draws a horizontal line through the mean
 that extends beyond the jittered dots. `mean_line_width` controls its width;
 by default it follows `jitter_width`. The mean point remains visible.
 
-Individual dots default to shape 21 (white-filled circles with grey outlines),
-`alpha = 0.8` and `stroke = 0.3`. These are shared defaults rather than exact
+In bars, mean plots and boxplots, individual dots default to solid grey circles
+(shape 16), size 1,
+`alpha = 0.6` and `stroke = 0`. Use `colour_outlined` for group-coloured fills
+with grey outlines. These are shared defaults rather than exact
 paper-specific marker settings. Use `point_style` to adjust them:
 
 ```r
@@ -184,8 +211,8 @@ plot_means(bars, "load", "pupil", show_points = TRUE, mean_line = TRUE,
            point_style = list(size = 1.5, shape = 16, colour = "grey50", alpha = 0.6))
 
 # Group-coloured fills with grey outlines
-plot_bars(bars, "load", "pupil", group = "load",
-          point_style = list(size = 1.5, fill = NULL, alpha = 0.6))
+plot_bars(bars, "load", "pupil", group = "load", point_preset = "colour_outlined",
+          point_style = list(size = 1.5, alpha = 0.6))
 ```
 
 ### Heatmaps

@@ -21,7 +21,7 @@ plot_boxplots <- function(data, x, y, group = NULL, show_points = TRUE,
                           dodge_width = 0.8, jitter_width = 0.4, seed = 1,
                           point_style = list(), ..., subgroup = NULL,
                           condition_groups = NULL, preset = "distribution",
-                          legend = c("inside", "separate", "none"), point_preset = "default") {
+                          legend = c("inside", "separate", "none"), point_preset = "grey_filled") {
   legend <- match.arg(legend)
   check_columns(data, c(x, y, group, subgroup), numeric = y)
   grouping <- prepare_plot_groups(data, group, subgroup, palette, condition_groups)
@@ -35,11 +35,13 @@ plot_boxplots <- function(data, x, y, group = NULL, show_points = TRUE,
   if (is.null(grouping$group)) {
     p$layers[[1]]$aes_params$fill <- kiyonaga_colors$GREY_LIGHT
   }
+  aesthetics <- "fill"
   if (show_points) {
-    p <- p + point_layer(grouping$group,
-                         resolve_point_style(point_preset, point_style),
+    style <- resolve_point_style(point_preset, point_style)
+    if (!is.null(grouping$group) && is.null(style$colour)) aesthetics <- c(aesthetics, "colour")
+    p <- p + point_layer(grouping$group, style,
                          dodge_width, jitter_width, seed)
   }
-  p <- p + plot_scales(grouping, palette, aesthetics = "fill") + theme_kiyonaga(..., preset = preset)
+  p <- p + plot_scales(grouping, palette, aesthetics = aesthetics) + theme_kiyonaga(..., preset = preset)
   finish_plot(p, legend)
 }
