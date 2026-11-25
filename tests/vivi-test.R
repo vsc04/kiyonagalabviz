@@ -70,8 +70,8 @@ p_scatter <- ggplot(d, aes(x = pupil, y = accuracy)) +
 p_scatter
 
 # ---- 4. Save at journal sizes (panel aspect ratio is kept) -------------------
-nice_save(file.path(out_dir, "pupil_timecourses_tiny.pdf"), plot = p_time,
-          layout = "tiny")
+nice_save(file.path(out_dir, "pupil_timecourses_slides.pdf"), plot = p_time,
+          layout = "slides")
 
 
 nice_save(file.path(out_dir, "pupil_bars.pdf"), plot = p_bars,
