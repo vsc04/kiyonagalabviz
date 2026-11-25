@@ -46,7 +46,7 @@ a palette name and a plot ratio `preset`. The theme and scales also work with an
 |---|---|
 | `theme_kiyonaga()` | Lab theme: 8 pt titles, 6.8 pt tick/legend labels, light grey axes, optional inside/outside ticks (off by default), and a top legend with a bold title |
 | `plot_bars()` | Mean bars with SE, SD, CI or no error bars, plus optional individual dots |
-| `plot_means()` | Mean points with error bars, optional individual dots and a horizontal mean marker |
+| `plot_means()` | Mean points with SE, SD, CI or no error bars, optional individual dots and a horizontal mean marker |
 | `plot_predictions()` | Fitted lines and confidence bands with optional binned means and selectable error bars |
 | `plot_histogram()` | Histograms with an optional density curve |
 | `plot_density()` | Kernel density distributions |

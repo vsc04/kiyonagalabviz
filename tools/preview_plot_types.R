@@ -20,15 +20,10 @@ plots <- list(
                                 rolling_window = 0.15),
   "Timecourse" = plot_timecourse(d, "time", "value", group = "task", window = c(0.6, 0.8))
 )
-source("tools/heatmap_examples.R", local = TRUE)
-svglite::svglite("man/figures/plot-types.svg", width = 9, height = 16)
+svglite::svglite("man/figures/plot-types.svg", width = 9, height = 9)
 draw_plot_types <- function() {
   grid::grid.newpage()
-  grid::pushViewport(grid::viewport(layout = grid::grid.layout(
-    3, 1, heights = grid::unit(c(9, 0.5, 6.5), "in")
-  )))
-  grid::pushViewport(grid::viewport(layout.pos.row = 1,
-                                    layout = grid::grid.layout(3, 3)))
+  grid::pushViewport(grid::viewport(layout = grid::grid.layout(3, 3)))
   for (i in seq_along(plots)) {
     p <- plots[[i]] + ggplot2::labs(title = names(plots)[i]) +
       ggplot2::theme(plot.margin = ggplot2::margin(8, 12, 8, 8))
@@ -37,13 +32,6 @@ draw_plot_types <- function() {
                                layout.pos.col = (i - 1) %% 3 + 1))
   }
   grid::popViewport()
-  grid::pushViewport(grid::viewport(layout.pos.row = 2))
-  grid::grid.text("Heatmaps", x = grid::unit(0.15, "in"), just = "left",
-                   gp = grid::gpar(fontsize = 14, fontface = "bold", col = "#262626"))
-  grid::popViewport()
-  grid::pushViewport(grid::viewport(layout.pos.row = 3))
-  draw_heatmaps(newpage = FALSE)
-  grid::popViewport(2)
 }
 draw_plot_types()
 grDevices::dev.off()
