@@ -230,5 +230,7 @@ git commit -m "Short description of the change"
 git push
 ```
 
+See [DEVELOPMENT.md](DEVELOPMENT.md) for setup, adding palettes and troubleshooting.
+
 Package structure adapted from [`charite`](https://github.com/johannesjuliusm/charite)
 by Johannes Julius Mohn (MIT licence).
